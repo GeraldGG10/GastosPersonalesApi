@@ -1,33 +1,34 @@
-ï»¿using GastosPersonales.Application.DTOs.Auth;
-using GastosPersonales.Domain.Entities;
-using GastosPersonales.Domain.Interfaces;
+using GastosPersonales.Application.Models;
 
 namespace GastosPersonales.Application.Services.Implementations
 {
-    public class AuthService : Services.Interfaces.IAuthService
+    public interface IAuthService
     {
-        private readonly IUsuarioRepositorio _usuarios;
-        private readonly IGeneradorJwt _jwt;
+        AuthResponse Register(RegisterRequest request);
+        AuthResponse Login(LoginRequest request);
+    }
 
-        public AuthService(IUsuarioRepositorio usuarios, IGeneradorJwt jwt)
+    public class AuthService : IAuthService
+    {
+        public AuthResponse Register(RegisterRequest request)
         {
-            _usuarios = usuarios;
-            _jwt = jwt;
+            // Lógica temporal de registro
+            return new AuthResponse
+            {
+                Token = "dummy-token",
+                Message = "Usuario registrado correctamente"
+            };
         }
 
-        public async System.Threading.Tasks.Task<AuthResponse> Register(RegisterRequest request)
+        public AuthResponse Login(LoginRequest request)
         {
-            var user = new Usuario { Nombre = request.Nombre, Correo = request.Correo, PasswordHash = request.Password };
-            await _usuarios.AgregarAsync(user);
-            var token = _jwt.GenerarToken(user.Id, user.Correo);
-            return new AuthResponse { Token = token, Correo = user.Correo };
-        }
-
-        public async System.Threading.Tasks.Task<AuthResponse> Login(LoginRequest request)
-        {
-            var user = await _usuarios.ObtenerPorCorreoAsync(request.Correo) ?? throw new System.Exception("Usuario no encontrado");
-            var token = _jwt.GenerarToken(user.Id, user.Correo);
-            return new AuthResponse { Token = token, Correo = user.Correo };
+            // Lógica temporal de login
+            return new AuthResponse
+            {
+                Token = "dummy-token",
+                Message = "Login exitoso"
+            };
         }
     }
 }
+

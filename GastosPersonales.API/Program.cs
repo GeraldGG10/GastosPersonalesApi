@@ -1,4 +1,4 @@
-﻿using GastosPersonales.Infrastructure.Persistencia;
+using GastosPersonales.Infrastructure.Persistencia;
 using GastosPersonales.Infrastructure.Repositorios;
 using GastosPersonales.Application.Services.Interfaces;
 using GastosPersonales.Application.Services.Implementations;
@@ -9,7 +9,7 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configuración (usar appsettings)
+// Configuraci�n (usar appsettings)
 builder.Services.AddDbContext<AplicacionDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection") ?? "Server=(localdb)\\mssqllocaldb;Database=GastosDB;Trusted_Connection=True;"));
 
@@ -31,7 +31,11 @@ builder.Services.AddAuthentication("Bearer")
         };
     });
 
-builder.Services.AddControllers();
+
+// FluentValidation & AutoMapper
+builder.Services.AddControllers().AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining(typeof(GastosPersonales.Application.Validators.RegisterRequestValidator)));
+builder.Services.AddAutoMapper(typeof(Program));
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo { Title = "GastosPersonales API", Version = "v1" }));
 

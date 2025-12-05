@@ -1,8 +1,7 @@
-namespace GastosPersonales.Application.Models
+﻿namespace GastosPersonales.Domain.Entities
 {
-    public class Expense
+    public class Expense : BaseEntity
     {
-        public int Id { get; set; }
         public decimal Amount { get; set; }
         public DateTime Date { get; set; } = DateTime.Now;
         public int CategoryId { get; set; }

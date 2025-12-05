@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using GastosPersonales.Application.Services.Interfaces;
-using GastosPersonales.Application.DTOs.User;
+using GastosPersonales.Application.DTOs.Auth;
 using Microsoft.AspNetCore.Authorization;
 
 namespace GastosPersonales.API.Controllers.Auth

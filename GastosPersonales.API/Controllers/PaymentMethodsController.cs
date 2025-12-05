@@ -1,11 +1,11 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using GastosPersonales.Application.Models;
 using GastosPersonales.Application.Services.Interfaces;
 
 namespace GastosPersonales.API.Controllers
 {
     [ApiController]
-    [Route(""api/[controller]"")]
+    [Route("api/[controller]")]
     public class PaymentMethodsController : ControllerBase
     {
         private readonly IMethodService _service;

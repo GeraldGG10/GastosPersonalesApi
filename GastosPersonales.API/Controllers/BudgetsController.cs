@@ -1,11 +1,11 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using GastosPersonales.Application.Services.Interfaces;
 using GastosPersonales.Application.Models;
 
 namespace GastosPersonales.API.Controllers
 {
     [ApiController]
-    [Route(""api/[controller]"")]
+    [Route("api/[controller]")]
     public class BudgetsController : ControllerBase
     {
         private readonly IBudgetService _service;
@@ -29,7 +29,7 @@ namespace GastosPersonales.API.Controllers
             return Ok(budget);
         }
 
-        [HttpGet(""percentage"")]
+        [HttpGet("percentage")]
         public async Task<IActionResult> GetPercentage(int categoryId, int month, int year)
         {
             var percent = await _service.CalculateSpentPercentage(categoryId, month, year, 1);

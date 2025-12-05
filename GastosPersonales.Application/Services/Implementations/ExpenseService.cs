@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using GastosPersonales.Application.Services.Interfaces;
+using GastosPersonales.Application.Models;
 using GastosPersonales.Domain.Entities;
 using GastosPersonales.Infrastructure.Repositories;
 
@@ -22,34 +23,42 @@ namespace GastosPersonales.Application.Services.Implementations
 
         public async Task<Expense> GetById(int id, int userId)
         {
-            return await _expenseRepository.GetById(id, userId);
+            var expense = await _expenseRepository.GetById(id, userId);
+            if (expense == null) throw new KeyNotFoundException($"Expense with id {id} not found");
+            return expense;
         }
 
-        public async Task Create(ExpenseDTO expenseDto, int userId)
+        public async Task<Expense> Create(ExpenseDTO expenseDto, int userId)
         {
             var expense = new Expense
             {
                 UserId = userId,
                 Description = expenseDto.Description,
                 Amount = expenseDto.Amount,
-                Date = expenseDto.Date
+                Date = expenseDto.Date,
+                CategoryId = expenseDto.CategoryId,
+                PaymentMethodId = expenseDto.PaymentMethodId
             };
-            await _expenseRepository.Add(expense);
+            return await _expenseRepository.Add(expense);
         }
 
-        public async Task Update(int id, ExpenseDTO expenseDto, int userId)
+        public async Task<Expense> Update(int id, ExpenseDTO expenseDto, int userId)
         {
             var expense = await _expenseRepository.GetById(id, userId);
-            if (expense == null) throw new KeyNotFoundException();
+            if (expense == null) throw new KeyNotFoundException($"Expense with id {id} not found");
+            
             expense.Description = expenseDto.Description;
             expense.Amount = expenseDto.Amount;
             expense.Date = expenseDto.Date;
-            await _expenseRepository.Update(expense);
+            expense.CategoryId = expenseDto.CategoryId;
+            expense.PaymentMethodId = expenseDto.PaymentMethodId;
+            
+            return await _expenseRepository.Update(expense);
         }
 
-        public async Task Delete(int id, int userId)
+        public async Task<bool> Delete(int id, int userId)
         {
-            await _expenseRepository.Delete(id, userId);
+            return await _expenseRepository.Delete(id, userId);
         }
     }
 }

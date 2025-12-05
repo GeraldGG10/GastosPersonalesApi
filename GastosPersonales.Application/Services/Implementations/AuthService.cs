@@ -1,34 +1,31 @@
-using GastosPersonales.Application.Models;
+ï»¿using GastosPersonales.Application.Services.Interfaces;
+using GastosPersonales.Application.DTOs.Auth;
+using System.Threading.Tasks;
 
 namespace GastosPersonales.Application.Services.Implementations
 {
-    public interface IAuthService
-    {
-        AuthResponse Register(RegisterRequest request);
-        AuthResponse Login(LoginRequest request);
-    }
-
     public class AuthService : IAuthService
     {
-        public AuthResponse Register(RegisterRequest request)
+        public Task<AuthResponse> Register(RegisterRequest request)
         {
-            // Lógica temporal de registro
-            return new AuthResponse
+            // LÃ³gica temporal de registro
+            var response = new AuthResponse
             {
                 Token = "dummy-token",
-                Message = "Usuario registrado correctamente"
+                Correo = request.Correo
             };
+            return Task.FromResult(response);
         }
 
-        public AuthResponse Login(LoginRequest request)
+        public Task<AuthResponse> Login(LoginRequest request)
         {
-            // Lógica temporal de login
-            return new AuthResponse
+            // LÃ³gica temporal de login
+            var response = new AuthResponse
             {
                 Token = "dummy-token",
-                Message = "Login exitoso"
+                Correo = request.Correo
             };
+            return Task.FromResult(response);
         }
     }
 }
-

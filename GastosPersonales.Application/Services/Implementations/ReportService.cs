@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using GastosPersonales.Application.Services.Interfaces;
+using GastosPersonales.Application.Models;
 using GastosPersonales.Domain.Entities;
 using GastosPersonales.Infrastructure.Repositories;
 
@@ -33,9 +35,35 @@ namespace GastosPersonales.Application.Services.Implementations
             return "expenses.json";
         }
 
-        public Task<IEnumerable<Expense>> MonthlyReport(int year, int month, int userId)
+        public async Task<object> MonthlyReport(int month, int year, int userId)
         {
-            throw new NotImplementedException();
+            var startDate = new DateTime(year, month, 1);
+            var endDate = startDate.AddMonths(1).AddDays(-1);
+
+            var expenses = await _expenseRepository.Filter(startDate, endDate, null, null, null, userId);
+            
+            var totalAmount = expenses.Sum(e => e.Amount);
+            var expenseCount = expenses.Count();
+
+            var byCategory = expenses
+                .GroupBy(e => e.CategoryId)
+                .Select(g => new
+                {
+                    CategoryId = g.Key,
+                    Total = g.Sum(e => e.Amount),
+                    Count = g.Count()
+                })
+                .OrderByDescending(x => x.Total)
+                .ToList();
+
+            return new
+            {
+                Year = year,
+                Month = month,
+                TotalAmount = totalAmount,
+                ExpenseCount = expenseCount,
+                ByCategory = byCategory
+            };
         }
     }
 }

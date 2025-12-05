@@ -1,4 +1,5 @@
-using GastosPersonales.Application.Models;
+﻿using GastosPersonales.Application.Models;
+using GastosPersonales.Domain.Entities;
 
 namespace GastosPersonales.Application.Services.Interfaces
 {

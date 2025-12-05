@@ -1,11 +1,11 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using GastosPersonales.Application.Services.Interfaces;
 using GastosPersonales.Application.Models;
 
 namespace GastosPersonales.API.Controllers
 {
     [ApiController]
-    [Route(""api/[controller]"")]
+    [Route("api/[controller]")]
     public class ExpensesController : ControllerBase
     {
         private readonly IExpenseService _service;

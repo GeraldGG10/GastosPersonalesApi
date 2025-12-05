@@ -1,4 +1,4 @@
-using GastosPersonales.Infrastructure.Persistencia;
+﻿using GastosPersonales.Infrastructure.Persistencia;
 using GastosPersonales.Infrastructure.Repositorios;
 using GastosPersonales.Application.Services.Interfaces;
 using GastosPersonales.Application.Services.Implementations;
@@ -9,7 +9,7 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configuraci�n (usar appsettings)
+// Configuración (usar appsettings)
 builder.Services.AddDbContext<AplicacionDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection") ?? "Server=(localdb)\\mssqllocaldb;Database=GastosDB;Trusted_Connection=True;"));
 
@@ -20,7 +20,11 @@ builder.Services.AddScoped<IGastoRepositorio, GastoRepositorio>();
 builder.Services.AddScoped<IGeneradorJwt, GeneradorJwt>();
 
 // Application services
-builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<GastosPersonales.Application.Services.Interfaces.IAuthService, GastosPersonales.Application.Services.Implementations.AuthService>();
+builder.Services.AddScoped<GastosPersonales.Infrastructure.Repositories.IExpenseRepository, GastosPersonales.Infrastructure.Repositories.ExpenseRepository>();
+builder.Services.AddScoped<IExpenseService, ExpenseService>();
+builder.Services.AddScoped<IReportService, ReportService>();
+builder.Services.AddScoped<IBudgetService, BudgetService>();
 
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>

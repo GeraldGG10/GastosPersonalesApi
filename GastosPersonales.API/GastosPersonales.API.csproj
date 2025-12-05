@@ -22,6 +22,7 @@
   <ItemGroup>
     <ProjectReference Include="..\GastosPersonales.Application\GastosPersonales.Application.csproj" />
     <ProjectReference Include="..\GastosPersonales.Infrastructure\GastosPersonales.Infrastructure.csproj" />
+    <ProjectReference Include="..\GastosPersonales.Domain\GastosPersonales.Domain.csproj" />
   </ItemGroup>
 
 </Project>

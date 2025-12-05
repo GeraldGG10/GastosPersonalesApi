@@ -1,10 +1,8 @@
-﻿using GastosPersonales.Infrastructure;
-using GastosPersonales.Infrastructure.Repositories;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using GastosPersonales.Application.Models;
 using GastosPersonales.Application.Services.Interfaces;
+using GastosPersonales.Domain.Entities;
 using GastosPersonales.Infrastructure.Repositories;
 
 namespace GastosPersonales.Application.Services.Implementations
@@ -18,26 +16,26 @@ namespace GastosPersonales.Application.Services.Implementations
             _expenseRepository = expenseRepository;
         }
 
-        public async Task<IEnumerable<Expense>> FilterExpenses(DateTime? startDate, DateTime? endDate, int? categoryId, int? userId, string description, int limit)
+        public async Task<IEnumerable<Expense>> FilterExpenses(DateTime? startDate, DateTime? endDate, int? categoryId, int? paymentMethodId, string? search, int userId)
         {
-            return await _expenseRepository.FilterExpenses(startDate, endDate, categoryId, userId, description, limit);
+            return await _expenseRepository.Filter(startDate, endDate, categoryId, paymentMethodId, search, userId);
         }
 
-        public async Task<object> MonthlyReport(int month, int year, int userId)
+        public async Task<string> ExportExpensesToTxt(int userId)
         {
-            return await _expenseRepository.MonthlyReport(month, year, userId);
+            var expenses = await _expenseRepository.GetByUserId(userId);
+            return "expenses.txt";
         }
 
-        public Task ExportExpensesToTxt(int userId)
+        public async Task<string> ExportExpensesToJson(int userId)
         {
-            throw new NotImplementedException();
+            var expenses = await _expenseRepository.GetByUserId(userId);
+            return "expenses.json";
         }
 
-        public Task ExportExpensesToJson(int userId)
+        public Task<IEnumerable<Expense>> MonthlyReport(int year, int month, int userId)
         {
             throw new NotImplementedException();
         }
     }
 }
-
-

@@ -1,10 +1,11 @@
-using GastosPersonales.Domain.Entities;
-using GastosPersonales.Application.Services.Interfaces;
+﻿using GastosPersonales.Infrastructure;
 using GastosPersonales.Infrastructure.Repositories;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using GastosPersonales.Application.Models;
+using GastosPersonales.Application.Services.Interfaces;
+using GastosPersonales.Infrastructure.Repositories;
 
 namespace GastosPersonales.Application.Services.Implementations
 {
@@ -17,38 +18,26 @@ namespace GastosPersonales.Application.Services.Implementations
             _expenseRepository = expenseRepository;
         }
 
-        public async Task<IEnumerable<Expense>> FilterExpenses(DateTime? startDate, DateTime? endDate, int? categoryId, int? paymentMethodId, string? search, int userId)
+        public async Task<IEnumerable<Expense>> FilterExpenses(DateTime? startDate, DateTime? endDate, int? categoryId, int? userId, string description, int limit)
         {
-            var expenses = await _expenseRepository.GetAllAsync(userId);
-
-            if (startDate.HasValue)
-                expenses = expenses.Where(e => e.Date >= startDate.Value);
-
-            if (endDate.HasValue)
-                expenses = expenses.Where(e => e.Date <= endDate.Value);
-
-            if (categoryId.HasValue)
-                expenses = expenses.Where(e => e.CategoryId == categoryId.Value);
-
-            if (paymentMethodId.HasValue)
-                expenses = expenses.Where(e => e.PaymentMethodId == paymentMethodId.Value);
-
-            if (!string.IsNullOrEmpty(search))
-                expenses = expenses.Where(e => e.Description.Contains(search, StringComparison.OrdinalIgnoreCase));
-
-            return expenses;
+            return await _expenseRepository.FilterExpenses(startDate, endDate, categoryId, userId, description, limit);
         }
 
-        public Task<IEnumerable<Expense>> MonthlyReport(int month, int year, int userId)
+        public async Task<object> MonthlyReport(int month, int year, int userId)
         {
-            return FilterExpenses(
-                new DateTime(year, month, 1),
-                new DateTime(year, month, DateTime.DaysInMonth(year, month)),
-                null,
-                null,
-                null,
-                userId
-            );
+            return await _expenseRepository.MonthlyReport(month, year, userId);
+        }
+
+        public Task ExportExpensesToTxt(int userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task ExportExpensesToJson(int userId)
+        {
+            throw new NotImplementedException();
         }
     }
 }
+
+

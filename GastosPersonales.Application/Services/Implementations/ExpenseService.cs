@@ -1,10 +1,10 @@
-using GastosPersonales.Domain.Entities;
-using GastosPersonales.Application.Services.Interfaces;
-using GastosPersonales.Application.DTOs;
-using GastosPersonales.Infrastructure.Repositories;
+﻿using GastosPersonales.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using GastosPersonales.Application.Models;
+using GastosPersonales.Application.Services.Interfaces;
+using GastosPersonales.Infrastructure.Repositories;
 
 namespace GastosPersonales.Application.Services.Implementations
 {
@@ -19,50 +19,42 @@ namespace GastosPersonales.Application.Services.Implementations
 
         public async Task<IEnumerable<Expense>> GetAll(int userId)
         {
-            return await _expenseRepository.GetAllAsync(userId);
+            return await _expenseRepository.GetAll(userId);
         }
 
         public async Task<Expense> GetById(int id, int userId)
         {
-            return await _expenseRepository.GetByIdAsync(id, userId);
+            return await _expenseRepository.GetById(id, userId);
         }
 
-        public async Task Create(ExpenseDTO dto, int userId)
+        public async Task<Expense> Create(ExpenseDTO expenseDTO, int userId)
         {
             var expense = new Expense
             {
-                Amount = dto.Amount,
-                Description = dto.Description,
-                CategoryId = dto.CategoryId,
-                PaymentMethodId = dto.PaymentMethodId,
                 UserId = userId,
-                Date = dto.Date
+                Amount = expenseDTO.Amount,
+                Description = expenseDTO.Description,
+                Date = expenseDTO.Date
             };
-
-            await _expenseRepository.CreateAsync(expense);
+            return await _expenseRepository.Create(expense);
         }
 
-        public async Task Update(int id, ExpenseDTO dto, int userId)
+        public async Task<Expense> Update(int id, ExpenseDTO expenseDTO, int userId)
         {
-            var expense = await _expenseRepository.GetByIdAsync(id, userId);
-            if (expense == null) throw new Exception("Expense not found");
+            var expense = await _expenseRepository.GetById(id, userId);
+            if (expense == null) return null;
 
-            expense.Amount = dto.Amount;
-            expense.Description = dto.Description;
-            expense.CategoryId = dto.CategoryId;
-            expense.PaymentMethodId = dto.PaymentMethodId;
-            expense.Date = dto.Date;
+            expense.Amount = expenseDTO.Amount;
+            expense.Description = expenseDTO.Description;
+            expense.Date = expenseDTO.Date;
 
-            await _expenseRepository.UpdateAsync(expense);
+            return await _expenseRepository.Update(expense);
         }
 
         public async Task<bool> Delete(int id, int userId)
         {
-            var expense = await _expenseRepository.GetByIdAsync(id, userId);
-            if (expense == null) return false;
-
-            await _expenseRepository.DeleteAsync(expense);
-            return true;
+            return await _expenseRepository.Delete(id, userId);
         }
     }
 }
+

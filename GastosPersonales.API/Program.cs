@@ -74,7 +74,11 @@ builder.Services.AddSwaggerGen(c =>
     {
         Title = "GastosPersonales API",
         Version = "v1"
-    });
+    }).MapType<IFormFile>(() => new Microsoft.OpenApi.Models.OpenApiSchema
+{
+    Type = "string",
+    Format = "binary"
+});
 });
 
 // --------------------------------------

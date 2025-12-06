@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="utf-8" />
@@ -7,24 +7,26 @@
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
+
   <div class="navbar">
     <div class="navbar-title">Gastos Personales</div>
     <div class="navbar-links">
+      <a href="dashboard.html">Dashboard</a>
       <a href="gastos.html">Gastos</a>
-      <a href="categorias.html">Categorías</a>
-      <a href="metodos.html">Métodos</a>
-      <a href="presupuesto.html">Presupuesto</a>
+      <a href="categories.html">CategorÃ­as</a>
+      <a href="payment-methods.html">MÃ©todos</a>
+      <a href="budget.html">Presupuesto</a>
       <a href="index.html" onclick="logout()">Salir</a>
     </div>
   </div>
 
   <div class="wrapper fade-in">
     <h1 class="title">Dashboard</h1>
-    <p class="subtitle">Resumen y análisis rápido</p>
+    <p class="subtitle">Resumen y anÃ¡lisis rÃ¡pido</p>
 
     <div class="grid">
       <div class="dash-card card">
-        <div class="kv"><div class="label">Total Gastado</div><div class="pill">Últimos 12 meses</div></div>
+        <div class="kv"><div class="label">Total Gastado</div><div class="pill">12 meses</div></div>
         <div class="dash-value" id="totalGastado">0</div>
       </div>
 
@@ -34,19 +36,21 @@
       </div>
 
       <div class="dash-card card">
-        <div class="kv"><div class="label">Categoría Top</div><div class="pill">Más gasto</div></div>
-        <div class="dash-value" id="categoriaTop">—</div>
+        <div class="kv"><div class="label">CategorÃ­a Top</div><div class="pill">MÃ¡s gasto</div></div>
+        <div class="dash-value" id="categoriaTop">â€”</div>
       </div>
     </div>
 
     <div class="card" style="margin-top:26px">
-      <h3 style="margin:0 0 14px 0;">Gastos por categoría</h3>
+      <h3 style="margin:0 0 14px 0;">Gastos por categorÃ­a</h3>
       <div class="canvas-wrap"><canvas id="chartCategorias"></canvas></div>
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="js/api.js"></script>
+  <script src="js/logout.js"></script>
   <script src="js/dashboard.js"></script>
 </body>
 </html>
+

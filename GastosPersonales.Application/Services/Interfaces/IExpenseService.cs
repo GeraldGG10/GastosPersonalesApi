@@ -1,4 +1,5 @@
 ﻿using GastosPersonales.Application.Models;
+using GastosPersonales.Application.DTOs;
 using GastosPersonales.Domain.Entities;
 
 namespace GastosPersonales.Application.Services.Interfaces
@@ -10,5 +11,6 @@ namespace GastosPersonales.Application.Services.Interfaces
         Task<Expense> Create(ExpenseDTO dto, int userId);
         Task<Expense> Update(int id, ExpenseDTO dto, int userId);
         Task<bool> Delete(int id, int userId);
+        Task<ImportResultDTO> ImportFromExcel(Stream fileStream, string fileName, int userId);
     }
 }

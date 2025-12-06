@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -6,6 +6,7 @@
   <title>Presupuesto</title>
 
   <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/budget.css">
   <script src="js/api.js"></script>
   <script src="js/budget.js" defer></script>
   <script src="js/logout.js"></script>
@@ -16,18 +17,15 @@
 
     <h1 class="title">Presupuestos</h1>
 
-    <!-- Selector de opciones -->
     <select id="modo" class="input" onchange="cambiarModo()">
-      <option value="categorias">A) Por Categoría Mensual</option>
-      <option value="mensual">B) Mensual General</option>
-      <option value="anual">C) Anual General</option>
+      <option value="categorias">Por CategorÃ­a Mensual</option>
+      <option value="mensual">Mensual General</option>
+      <option value="anual">Anual General</option>
     </select>
 
     <div id="contenidoPresupuesto" class="card"></div>
 
-    <div style="margin-top:30px;">
-      <button class="btn" onclick="logout()">Salir</button>
-    </div>
+    <button class="btn" onclick="logout()" style="margin-top:30px;">Salir</button>
 
   </div>
 </body>

@@ -1,3 +1,4 @@
+// js/auth.js
 async function login() {
   const correo = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
@@ -8,26 +9,24 @@ async function login() {
   }
 
   try {
-    const res = await fetch(`${API_URL}/Auth/login`, {
+    // Usamos apiFetch para normalizar headers y token
+    const res = await apiFetch("/Auth/login", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ correo, password })
     });
 
-    const text = await res.text();
-
-    if (!res.ok) {
-      alert("Error al iniciar sesión: " + text);
+    // Si la respuesta tiene token, guardamos
+    if (res && res.token) {
+      localStorage.setItem("token", res.token);
+      // opcional: guardar usuario
+      localStorage.setItem("usuario", JSON.stringify({ nombre: res.nombre, email: res.email }));
+      window.location.href = "dashboard.html";
       return;
     }
 
-    const data = JSON.parse(text);
-
-    localStorage.setItem("token", data.token);
-
-    alert("Inicio de sesión exitoso.");
-    window.location.href = "dashboard.html";
-
+    // si viene texto o mensaje de error
+    const message = (res && res.message) ? res.message : JSON.stringify(res);
+    alert("Error al iniciar sesión: " + message);
   } catch (e) {
     console.error(e);
     alert("Error de conexión con el servidor.");

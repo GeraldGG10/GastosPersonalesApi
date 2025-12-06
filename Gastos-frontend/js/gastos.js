@@ -1,20 +1,21 @@
-if (!localStorage.getItem("token")) location.href = "index.html";
+﻿if (!localStorage.getItem("token")) location.href = "index.html";
 
 async function fetchGastos() {
-  const data = await apiFetch("/gastos");
+  const data = await apiFetch("/Expenses"); // <- corregido
   const list = Array.isArray(data) ? data : (data?.items || []);
   const tbody = document.getElementById("tbodyGastos");
   tbody.innerHTML = "";
   list.forEach(g => {
     const tr = document.createElement("tr");
-    tr.innerHTML = `<td>${new Date(g.fecha).toLocaleDateString()}</td>
-                    <td>${g.descripcion || ""}</td>
-                    <td>${g.categoriaNombre || g.categoria || "-"}</td>
-                    <td>$ ${formatCurrency(g.monto)}</td>
+    tr.innerHTML = `<td>${new Date(g.date || g.fecha).toLocaleDateString()}</td>
+                    <td>${g.description || g.descripcion || ""}</td>
+                    <td>${g.categoryName || g.categoriaNombre || "-"}</td>
+                    <td>$ ${formatCurrency(g.amount || g.monto)}</td>
                     <td><button class="btn" onclick='eliminar("${g.id}")'>Eliminar</button></td>`;
     tbody.appendChild(tr);
   });
 }
+
 
 function mostrarCrear() {
   document.getElementById("modalCrear").style.display = "block";
@@ -29,9 +30,9 @@ async function crearGasto() {
   const monto = parseFloat(document.getElementById("g_monto").value);
   const categoria = document.getElementById("g_cat").value;
 
-  if (!fecha || !monto || !categoria) { alert("Complete fecha, monto y categoría."); return; }
+  if (!fecha || !monto || !categoria) { alert("Complete fecha, monto y categorÃ­a."); return; }
 
-  const res = await apiFetch("/gastos", {
+  const res = await apiFetch("/Expenses", {
     method: "POST",
     body: JSON.stringify({ fecha, descripcion, monto, categoriaId: categoria })
   });
@@ -45,8 +46,9 @@ async function crearGasto() {
 
 async function eliminar(id) {
   if (!confirm("Eliminar gasto?")) return;
-  await apiFetch(`/gastos/${id}`, { method: "DELETE" });
+  await apiFetch(`/Expenses/${id}`, { method: "DELETE" });
   fetchGastos();
 }
 
 fetchGastos();
+

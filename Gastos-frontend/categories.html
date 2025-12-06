@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Categorías</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="js/api.js"></script>
+  <script src="js/categories.js" defer></script>
+  <script src="js/logout.js"></script>
+</head>
+<body>
+
+  <div class="container fade-in">
+    <h1 class="title">Categorías</h1>
+
+    <button class="btn btn-accent" onclick="abrirModal()">Nueva categoría</button>
+
+    <div id="listaCategorias" class="card" style="margin-top:20px;">
+      Cargando categorías...
+    </div>
+
+    <!-- Modal -->
+    <div id="modalCategoria" class="modal hidden">
+      <div class="modal-content">
+        <h2>Nueva categoría</h2>
+        <input type="text" id="nombreCategoria" placeholder="Nombre" />
+        <button class="btn btn-accent" onclick="crearCategoria()">Guardar</button>
+        <button class="btn" onclick="cerrarModal()">Cancelar</button>
+      </div>
+    </div>
+
+    <button class="btn" onclick="logout()">Salir</button>
+
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Métodos de Pago</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="js/api.js"></script>
+  <script src="js/paymentMethods.js" defer></script>
+  <script src="js/logout.js"></script>
+</head>
+<body>
+
+  <div class="container fade-in">
+    <h1 class="title">Métodos de Pago</h1>
+
+    <button class="btn btn-accent" onclick="abrirModal()">Nuevo método</button>
+
+    <div id="listaMetodos" class="card" style="margin-top:20px;">
+      Cargando métodos...
+    </div>
+
+    <!-- Modal -->
+    <div id="modalMetodo" class="modal hidden">
+      <div class="modal-content">
+        <h2>Nuevo método de pago</h2>
+        <input type="text" id="nombreMetodo" placeholder="Nombre" />
+        <button class="btn btn-accent" onclick="crearMetodo()">Guardar</button>
+        <button class="btn" onclick="cerrarModal()">Cancelar</button>
+      </div>
+    </div>
+
+    <button class="btn" onclick="logout()">Salir</button>
+
+  </div>
+
+</body>
+</html>

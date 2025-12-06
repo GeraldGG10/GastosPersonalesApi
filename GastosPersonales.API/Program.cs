@@ -31,13 +31,17 @@ builder.Services.AddAuthentication("Bearer")
     {
         options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
         {
-            ValidateIssuer = false, ValidateAudience = false, ValidateLifetime = true, ValidateIssuerSigningKey = true
+            ValidateIssuer = false, 
+            ValidateAudience = false, 
+            ValidateLifetime = true, 
+            ValidateIssuerSigningKey = true
         };
     });
 
+builder.Services.AddAuthorization();
 
+builder.Services.AddControllers();
 builder.Services.AddAutoMapper(typeof(Program));
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo { Title = "GastosPersonales API", Version = "v1" }));
 

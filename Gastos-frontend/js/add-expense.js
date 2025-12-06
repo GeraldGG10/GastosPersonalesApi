@@ -4,31 +4,21 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 async function cargarCategorias() {
-  const token = localStorage.getItem("token");
-
-  const res = await fetch(`${API_URL}/Categories`, {
-    headers: { "Authorization": `Bearer ${token}` }
-  });
-
-  const data = await res.json();
+  const res = await apiFetch("/Categories"); // usa apiFetch para token automático
   const select = document.getElementById("categoriaId");
+  select.innerHTML = ""; // limpiar antes de cargar
 
-  data.forEach(cat => {
+  res.forEach(cat => {
     select.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
   });
 }
 
 async function cargarMetodos() {
-  const token = localStorage.getItem("token");
-
-  const res = await fetch(`${API_URL}/PaymentMethods`, {
-    headers: { "Authorization": `Bearer ${token}` }
-  });
-
-  const data = await res.json();
+  const res = await apiFetch("/PaymentMethods"); // usa apiFetch
   const select = document.getElementById("paymentMethodId");
+  select.innerHTML = ""; // limpiar antes de cargar
 
-  data.forEach(m => {
+  res.forEach(m => {
     select.innerHTML += `<option value="${m.id}">${m.name}</option>`;
   });
 }
@@ -44,18 +34,12 @@ document.getElementById("gastoForm").addEventListener("submit", async (e) => {
     description: document.getElementById("descripcion").value
   };
 
-  const token = localStorage.getItem("token");
-
-  const res = await fetch(`${API_URL}/Expenses`, {
+  const res = await apiFetch("/Expenses", {
     method: "POST",
-    headers: {
-      "Authorization": `Bearer ${token}`,
-      "Content-Type": "application/json"
-    },
     body: JSON.stringify(gasto)
   });
 
-  if (res.ok) {
+  if (res && res.id) {
     alert("Gasto registrado correctamente");
     document.getElementById("gastoForm").reset();
   } else {

@@ -1,10 +1,10 @@
 ﻿if (!localStorage.getItem("token")) location.href = "index.html";
 
 async function fetchGastos() {
-  const data = await apiFetch("/Expenses"); // <- corregido
-  const list = Array.isArray(data) ? data : (data?.items || []);
+  const list = await apiFetch("/Expenses") || [];
   const tbody = document.getElementById("tbodyGastos");
   tbody.innerHTML = "";
+
   list.forEach(g => {
     const tr = document.createElement("tr");
     tr.innerHTML = `<td>${new Date(g.date || g.fecha).toLocaleDateString()}</td>
@@ -16,10 +16,10 @@ async function fetchGastos() {
   });
 }
 
-
 function mostrarCrear() {
   document.getElementById("modalCrear").style.display = "block";
 }
+
 function cerrarModal(ev) {
   if (!ev || ev.target) document.getElementById("modalCrear").style.display = "none";
 }
@@ -30,12 +30,16 @@ async function crearGasto() {
   const monto = parseFloat(document.getElementById("g_monto").value);
   const categoria = document.getElementById("g_cat").value;
 
-  if (!fecha || !monto || !categoria) { alert("Complete fecha, monto y categorÃ­a."); return; }
+  if (!fecha || !monto || !categoria) { 
+    alert("Complete fecha, monto y categoría."); 
+    return; 
+  }
 
   const res = await apiFetch("/Expenses", {
     method: "POST",
-    body: JSON.stringify({ fecha, descripcion, monto, categoriaId: categoria })
+    body: JSON.stringify({ date: fecha, description: descripcion, amount: monto, categoryId: categoria })
   });
+
   if (res && res.id) {
     cerrarModal();
     fetchGastos();
@@ -51,4 +55,3 @@ async function eliminar(id) {
 }
 
 fetchGastos();
-

@@ -5,11 +5,12 @@ using GastosPersonales.Infrastructure.Autenticacion;
 using GastosPersonales.Infrastructure.Persistencia;
 using GastosPersonales.Infrastructure.Repositories;
 using GastosPersonales.Infrastructure.Repositorios;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi;
 using Microsoft.OpenApi.Models;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,11 +29,11 @@ builder.Services.AddCors(options =>
 });
 
 // -----------------------------
-// 🔵 BASE DE DATOS
+// 🔵 BASE DE DATOS - SQLITE ✅
 // -----------------------------
 builder.Services.AddDbContext<AplicacionDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")
-        ?? "Server=(localdb)\\mssqllocaldb;Database=GastosDB;Trusted_Connection=True;"));
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")
+        ?? "Data Source=GastosDB.db"));
 
 // -----------------------------
 // 🔵 INYECCIÓN DE DEPENDENCIAS
@@ -42,28 +43,40 @@ builder.Services.AddScoped<ICategoriaRepositorio, CategoriaRepositorio>();
 builder.Services.AddScoped<IMetodoPagoRepositorio, MetodoPagoRepositorio>();
 builder.Services.AddScoped<IGastoRepositorio, GastoRepositorio>();
 builder.Services.AddScoped<IGeneradorJwt, GeneradorJwt>();
-
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
 builder.Services.AddScoped<IExpenseService, ExpenseService>();
 builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<IBudgetService, BudgetService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IMethodService, MethodService>();
 
 // -----------------------------
 // 🔵 AUTENTICACIÓN JWT
 // -----------------------------
-builder.Services.AddAuthentication("Bearer")
-    .AddJwtBearer("Bearer", options =>
+var jwtKey = builder.Configuration["Jwt:Key"] ?? "tu-clave-secreta-super-segura-de-al-menos-32-caracteres-para-jwt";
+var jwtIssuer = builder.Configuration["Jwt:Issuer"] ?? "GastosPersonalesAPI";
+var jwtAudience = builder.Configuration["Jwt:Audience"] ?? "GastosPersonalesFrontend";
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
     {
         options.RequireHttpsMetadata = false;
+        options.SaveToken = true;
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuer = false,
-            ValidateAudience = false,
+            ValidateIssuer = true,
+            ValidateAudience = true,
             ValidateLifetime = true,
-            ValidateIssuerSigningKey = false
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtIssuer,
+            ValidAudience = jwtAudience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
+            ClockSkew = TimeSpan.Zero
         };
     });
+
+builder.Services.AddAuthorization();
 
 // -----------------------------
 // 🔵 SWAGGER
@@ -77,7 +90,30 @@ builder.Services.AddSwaggerGen(c =>
         Version = "v1"
     });
 
-    // Mapear IFormFile correctamente para Swagger
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header usando el esquema Bearer. Ejemplo: \"Bearer {token}\"",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
+
     c.MapType<IFormFile>(() => new OpenApiSchema
     {
         Type = "string",
@@ -100,6 +136,13 @@ builder.Services.AddControllers();
 // -----------------------------
 var app = builder.Build();
 
+// ✅ CREAR BASE DE DATOS AUTOMÁTICAMENTE AL INICIAR
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AplicacionDbContext>();
+    db.Database.EnsureCreated(); // Crea la BD si no existe
+}
+
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
@@ -116,6 +159,6 @@ if (app.Environment.IsDevelopment())
 app.UseCors(MyCors);
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
+
 app.Run();

@@ -1,6 +1,38 @@
 ﻿namespace GastosPersonales.Application.DTOs.Auth
 {
-    public class RegisterRequest { public string Nombre { get; set; } = ""; public string Correo { get; set; } = ""; public string Password { get; set; } = ""; }
-    public class LoginRequest { public string Correo { get; set; } = ""; public string Password { get; set; } = ""; }
-    public class AuthResponse { public string Token { get; set; } = ""; public string Correo { get; set; } = ""; }
+    // DTO para Login
+    public class LoginRequest
+    {
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+    }
+
+    // DTO para Registro
+    public class RegisterRequest
+    {
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+        public string FullName { get; set; } = string.Empty;
+    }
+
+    // DTO de respuesta de autenticación
+    public class AuthResponse
+    {
+        public string Token { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string FullName { get; set; } = string.Empty;
+    }
+
+    // DTO para actualizar perfil
+    public class UpdateProfileDTO
+    {
+        public string Nombre { get; set; } = string.Empty;
+    }
+
+    // DTO para cambiar contraseña
+    public class ChangePasswordDTO
+    {
+        public string CurrentPassword { get; set; } = string.Empty;
+        public string NewPassword { get; set; } = string.Empty;
+    }
 }

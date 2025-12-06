@@ -6,5 +6,7 @@ namespace GastosPersonales.Application.Services.Interfaces
     {
         System.Threading.Tasks.Task<AuthResponse> Register(RegisterRequest request);
         System.Threading.Tasks.Task<AuthResponse> Login(LoginRequest request);
+        System.Threading.Tasks.Task<bool> UpdateProfile(int userId, UpdateProfileDTO dto);
+        System.Threading.Tasks.Task<bool> ChangePassword(int userId, ChangePasswordDTO dto);
     }
 }

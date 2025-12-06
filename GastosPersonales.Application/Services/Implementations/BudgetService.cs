@@ -1,5 +1,6 @@
 ﻿using GastosPersonales.Application.Models;
 using GastosPersonales.Application.Services.Interfaces;
+using System.Linq;
 
 namespace GastosPersonales.Application.Services.Implementations
 {
@@ -90,6 +91,54 @@ namespace GastosPersonales.Application.Services.Implementations
                 .Sum(e => e.Amount);
 
             return (categoryExpenses / budget.Amount) * 100;
+        }
+
+        public async Task<IEnumerable<object>> GetExceededBudgets(int month, int year, int userId)
+        {
+            var userBudgets = _budgets.Where(b => 
+                b.Month == month && 
+                b.Year == year && 
+                b.UserId == userId);
+
+            var expenses = await _expenseService.GetAll(userId);
+            
+            var exceededList = new List<object>();
+
+            foreach (var budget in userBudgets)
+            {
+                var categoryExpenses = expenses
+                    .Where(e => e.CategoryId == budget.CategoryId && 
+                               e.Date.Month == month && 
+                               e.Date.Year == year)
+                    .Sum(e => e.Amount);
+
+                var percentage = budget.Amount > 0 ? (categoryExpenses / budget.Amount) * 100 : 0;
+
+                string status;
+                if (percentage >= 100)
+                    status = "EXCEDIDO";
+                else if (percentage >= 80)
+                    status = "CRÍTICO";
+                else if (percentage >= 50)
+                    status = "ADVERTENCIA";
+                else
+                    status = "OK";
+
+                exceededList.Add(new
+                {
+                    CategoryId = budget.CategoryId,
+                    BudgetAmount = budget.Amount,
+                    SpentAmount = categoryExpenses,
+                    Percentage = Math.Round(percentage, 2),
+                    Status = status,
+                    Remaining = budget.Amount - categoryExpenses
+                });
+            }
+
+            // Retornar solo los que están en advertencia o peor
+            return exceededList
+                .Where(b => ((dynamic)b).Percentage >= 50)
+                .OrderByDescending(b => ((dynamic)b).Percentage);
         }
     }
 }

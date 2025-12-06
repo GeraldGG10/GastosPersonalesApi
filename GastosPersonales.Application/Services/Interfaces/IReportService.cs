@@ -9,5 +9,6 @@ namespace GastosPersonales.Application.Services.Interfaces
         Task<object> MonthlyReport(int month, int year, int userId);
         Task<string> ExportExpensesToTxt(int userId);
         Task<string> ExportExpensesToJson(int userId);
+        Task<byte[]> ExportExpensesToExcel(int userId);
     }
 }

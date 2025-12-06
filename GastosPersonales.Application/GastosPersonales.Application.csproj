@@ -6,6 +6,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="EPPlus" Version="7.0.0" />
     <PackageReference Include="FluentValidation" Version="11.*" />
   </ItemGroup>
 

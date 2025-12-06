@@ -1,4 +1,4 @@
-using GastosPersonales.Application.Models;
+﻿using GastosPersonales.Application.Models;
 
 namespace GastosPersonales.Application.Services.Interfaces
 {
@@ -10,5 +10,6 @@ namespace GastosPersonales.Application.Services.Interfaces
         Task<Budget> Update(int id, BudgetDTO dto, int userId);
         Task<bool> Delete(int id, int userId);
         Task<decimal> CalculateSpentPercentage(int categoryId, int month, int year, int userId);
+        Task<IEnumerable<object>> GetExceededBudgets(int month, int year, int userId);
     }
 }

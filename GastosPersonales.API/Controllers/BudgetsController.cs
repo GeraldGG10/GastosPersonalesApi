@@ -20,7 +20,7 @@ namespace GastosPersonales.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var userId = 1; // TODO: Obtener del token JWT
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);; // TODO: Obtener del token JWT
             var budgets = await _service.GetAll(userId);
             return Ok(budgets);
         }
@@ -28,7 +28,7 @@ namespace GastosPersonales.API.Controllers
         [HttpGet("{categoryId}/{month}/{year}")]
         public async Task<IActionResult> GetByCategoryMonth(int categoryId, int month, int year)
         {
-            var userId = 1; // TODO: Obtener del token JWT
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);; // TODO: Obtener del token JWT
             try
             {
                 var budget = await _service.GetByCategoryMonth(categoryId, month, year, userId);
@@ -43,7 +43,7 @@ namespace GastosPersonales.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] BudgetDTO dto)
         {
-            var userId = 1; // TODO: Obtener del token JWT
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);; // TODO: Obtener del token JWT
             var budget = await _service.Create(dto, userId);
             return CreatedAtAction(nameof(GetByCategoryMonth), 
                 new { categoryId = budget.CategoryId, month = budget.Month, year = budget.Year }, 
@@ -53,7 +53,7 @@ namespace GastosPersonales.API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] BudgetDTO dto)
         {
-            var userId = 1; // TODO: Obtener del token JWT
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);; // TODO: Obtener del token JWT
             try
             {
                 var budget = await _service.Update(id, dto, userId);
@@ -68,7 +68,7 @@ namespace GastosPersonales.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var userId = 1; // TODO: Obtener del token JWT
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);; // TODO: Obtener del token JWT
             var success = await _service.Delete(id, userId);
             if (!success) return NotFound(new { Message = "Presupuesto no encontrado" });
             return NoContent();
@@ -77,7 +77,7 @@ namespace GastosPersonales.API.Controllers
         [HttpGet("percentage/{categoryId}/{month}/{year}")]
         public async Task<IActionResult> GetSpentPercentage(int categoryId, int month, int year)
         {
-            var userId = 1; // TODO: Obtener del token JWT
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);; // TODO: Obtener del token JWT
             var percentage = await _service.CalculateSpentPercentage(categoryId, month, year, userId);
             return Ok(new { CategoryId = categoryId, Month = month, Year = year, Percentage = percentage });
         }
@@ -85,9 +85,13 @@ namespace GastosPersonales.API.Controllers
         [HttpGet("exceeded/{month}/{year}")]
         public async Task<IActionResult> GetExceeded(int month, int year)
         {
-            var userId = 1; // TODO: Obtener del token JWT
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);; // TODO: Obtener del token JWT
             var exceeded = await _service.GetExceededBudgets(month, year, userId);
             return Ok(exceeded);
         }
     }
 }
+
+
+
+

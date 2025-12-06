@@ -2,11 +2,17 @@
 using GastosPersonales.Application.Models;
 using GastosPersonales.Application.Services.Interfaces;
 
+using Microsoft.AspNetCore.Mvc;
+using GastosPersonales.Application.Services.Interfaces;
+using GastosPersonales.Application.Models;
+using Microsoft.AspNetCore.Authorization;
+
 namespace GastosPersonales.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class PaymentMethodsController : ControllerBase
+    [Authorize]
+    public class PaymentMethodsController : ControllerBase // ✅ Corregido
     {
         private readonly IMethodService _service;
 
@@ -18,15 +24,24 @@ namespace GastosPersonales.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var methods = await _service.GetAll(1); // userId dummy
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+            var methods = await _service.GetAll(userId);
             return Ok(methods);
         }
 
         [HttpPost]
         public async Task<IActionResult> Create(PaymentMethodDTO dto)
         {
-            var method = await _service.Create(dto, 1);
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+            var method = await _service.Create(dto, userId);
             return Ok(method);
         }
     }
 }
+
+
+
+
+
+
+

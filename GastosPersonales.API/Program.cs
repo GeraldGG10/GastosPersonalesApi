@@ -36,8 +36,6 @@ builder.Services.AddAuthentication("Bearer")
     });
 
 
-// FluentValidation & AutoMapper
-builder.Services.AddControllers().AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining(typeof(GastosPersonales.Application.Validators.RegisterRequestValidator)));
 builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddEndpointsApiExplorer();

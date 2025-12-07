@@ -8,7 +8,7 @@ namespace GastosPersonales.API.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
-    public class CategoriesController : ControllerBase // ✅ Corregido
+    public class CategoriesController : ControllerBase
     {
         private readonly ICategoryService _service;
 
@@ -31,6 +31,15 @@ namespace GastosPersonales.API.Controllers
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
             var category = await _service.Create(dto, userId);
             return Ok(category);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+            var success = await _service.Delete(id, userId);
+            if (!success) return NotFound(new { Message = "Categoría no encontrada" });
+            return NoContent();
         }
     }
 }

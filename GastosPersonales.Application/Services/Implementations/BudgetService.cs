@@ -7,7 +7,6 @@ namespace GastosPersonales.Application.Services.Implementations
     public class BudgetService : IBudgetService
     {
         private static List<Budget> _budgets = new List<Budget>();
-        private static int _nextId = 1;
         private readonly IExpenseService _expenseService;
 
         public BudgetService(IExpenseService expenseService)
@@ -17,9 +16,12 @@ namespace GastosPersonales.Application.Services.Implementations
 
         public async Task<Budget> Create(BudgetDTO dto, int userId)
         {
+            // Generar ID basado en el máximo existente + 1
+            int nextId = _budgets.Any() ? _budgets.Max(b => b.Id) + 1 : 1;
+
             var budget = new Budget
             {
-                Id = _nextId++,
+                Id = nextId,
                 CategoryId = dto.CategoryId,
                 Amount = dto.Amount,
                 Month = dto.Month,
@@ -37,10 +39,10 @@ namespace GastosPersonales.Application.Services.Implementations
 
         public async Task<Budget> GetByCategoryMonth(int categoryId, int month, int year, int userId)
         {
-            var budget = _budgets.FirstOrDefault(b => 
-                b.CategoryId == categoryId && 
-                b.Month == month && 
-                b.Year == year && 
+            var budget = _budgets.FirstOrDefault(b =>
+                b.CategoryId == categoryId &&
+                b.Month == month &&
+                b.Year == year &&
                 b.UserId == userId);
 
             if (budget == null)
@@ -52,7 +54,7 @@ namespace GastosPersonales.Application.Services.Implementations
         public async Task<Budget> Update(int id, BudgetDTO dto, int userId)
         {
             var budget = _budgets.FirstOrDefault(b => b.Id == id && b.UserId == userId);
-            if (budget == null) 
+            if (budget == null)
                 throw new KeyNotFoundException($"Budget with id {id} not found");
 
             budget.CategoryId = dto.CategoryId;
@@ -74,10 +76,10 @@ namespace GastosPersonales.Application.Services.Implementations
 
         public async Task<decimal> CalculateSpentPercentage(int categoryId, int month, int year, int userId)
         {
-            var budget = _budgets.FirstOrDefault(b => 
-                b.CategoryId == categoryId && 
-                b.Month == month && 
-                b.Year == year && 
+            var budget = _budgets.FirstOrDefault(b =>
+                b.CategoryId == categoryId &&
+                b.Month == month &&
+                b.Year == year &&
                 b.UserId == userId);
 
             if (budget == null || budget.Amount == 0)
@@ -85,8 +87,8 @@ namespace GastosPersonales.Application.Services.Implementations
 
             var expenses = await _expenseService.GetAll(userId);
             var categoryExpenses = expenses
-                .Where(e => e.CategoryId == categoryId && 
-                           e.Date.Month == month && 
+                .Where(e => e.CategoryId == categoryId &&
+                           e.Date.Month == month &&
                            e.Date.Year == year)
                 .Sum(e => e.Amount);
 
@@ -95,20 +97,20 @@ namespace GastosPersonales.Application.Services.Implementations
 
         public async Task<IEnumerable<object>> GetExceededBudgets(int month, int year, int userId)
         {
-            var userBudgets = _budgets.Where(b => 
-                b.Month == month && 
-                b.Year == year && 
+            var userBudgets = _budgets.Where(b =>
+                b.Month == month &&
+                b.Year == year &&
                 b.UserId == userId);
 
             var expenses = await _expenseService.GetAll(userId);
-            
+
             var exceededList = new List<object>();
 
             foreach (var budget in userBudgets)
             {
                 var categoryExpenses = expenses
-                    .Where(e => e.CategoryId == budget.CategoryId && 
-                               e.Date.Month == month && 
+                    .Where(e => e.CategoryId == budget.CategoryId &&
+                               e.Date.Month == month &&
                                e.Date.Year == year)
                     .Sum(e => e.Amount);
 

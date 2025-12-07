@@ -5,7 +5,7 @@
 checkAuth();
 
 // Estado global
-let categories     = [];
+let categories = [];
 let editingCategoryId = null;
 
 
@@ -90,6 +90,9 @@ function renderCategoriesTable() {
                     <button class="btn-icon"
                         onclick="editCategory(${c.id})"
                         title="Editar">✏️</button>
+                    <button class="btn-icon"
+                        onclick="deleteCategory(${c.id})"
+                        title="Eliminar">🗑️</button>
                 </div>
             </td>
         </tr>
@@ -105,8 +108,8 @@ async function handleCategorySubmit(event) {
     event.preventDefault();
 
     const categoryData = {
-        name     : document.getElementById('categoryName').value,
-        isActive : document.getElementById('categoryActive').checked
+        name: document.getElementById('categoryName').value,
+        isActive: document.getElementById('categoryActive').checked
     };
 
     try {
@@ -131,10 +134,27 @@ function editCategory(id) {
     if (!category) return;
 
     document.getElementById('modalTitle').textContent = 'Editar Categoría';
-    document.getElementById('categoryName').value  = category.name;
+    document.getElementById('categoryName').value = category.name;
     document.getElementById('categoryActive').checked = category.isActive;
 
     openModal('categoryModal');
+}
+
+
+// ===============================
+// ELIMINAR CATEGORÍA
+// ===============================
+async function deleteCategory(id) {
+    if (!confirmAction('¿Está seguro de eliminar esta categoría?')) return;
+    
+    try {
+        await CategoryService.delete(id);
+        showToast('Categoría eliminada correctamente', 'success');
+        await loadCategories();
+    } catch (error) {
+        console.error('Error al eliminar categoría:', error);
+        showToast('Error al eliminar la categoría', 'error');
+    }
 }
 
 

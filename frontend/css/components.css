@@ -24,6 +24,7 @@
     gap: 1rem;
     width: 100%;
     margin-top: 1rem;
+    flex-wrap: wrap;
 }
 
 /* ================================
@@ -91,6 +92,7 @@
 .action-buttons {
     display: flex;
     gap: 0.5rem;
+    flex-wrap: wrap;
 }
 
 .btn-icon {
@@ -114,7 +116,7 @@
    ================================ */
 .profile-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 1.5rem;
 }
 
@@ -122,6 +124,7 @@
     display: flex;
     align-items: center;
     gap: 1.5rem;
+    flex-wrap: wrap;
 }
 
 .profile-avatar {
@@ -135,11 +138,18 @@
     font-size: 2rem;
     font-weight: 700;
     color: white;
+    flex-shrink: 0;
+}
+
+.profile-details {
+    flex: 1;
+    min-width: 200px;
 }
 
 .profile-details p {
     margin-bottom: 0.5rem;
     color: var(--text-secondary);
+    word-break: break-word;
 }
 
 .profile-details strong {
@@ -157,7 +167,8 @@
 }
 
 .month-selector select,
-.month-selector input {
+.month-selector input,
+.month-selector button {
     flex: 1;
     min-width: 150px;
 }
@@ -169,6 +180,11 @@
     display: flex;
     gap: 1rem;
     flex-wrap: wrap;
+}
+
+.export-buttons button {
+    flex: 1;
+    min-width: 150px;
 }
 
 /* ================================
@@ -233,6 +249,8 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
 }
 
 .budget-title {
@@ -254,6 +272,8 @@
     justify-content: space-between;
     font-size: 0.875rem;
     color: var(--text-secondary);
+    flex-wrap: wrap;
+    gap: 0.5rem;
 }
 
 /* ================================
@@ -294,6 +314,7 @@
     font-size: 1.5rem;
     font-weight: 700;
     color: var(--text-primary);
+    word-break: break-word;
 }
 
 /* ================================
@@ -316,9 +337,26 @@
 }
 
 /* ================================
-   RESPONSIVIDAD (Media Queries)
+   RESPONSIVIDAD - TABLET
+   ================================ */
+@media (max-width: 1024px) {
+    .profile-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .report-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+}
+
+/* ================================
+   RESPONSIVIDAD - MOBILE
    ================================ */
 @media (max-width: 768px) {
+    .filter-section {
+        padding: 1rem;
+    }
+
     .filter-grid {
         grid-template-columns: 1fr;
     }
@@ -327,11 +365,81 @@
         flex-direction: column;
     }
 
+    .filter-actions button {
+        width: 100%;
+    }
+
     .profile-grid {
         grid-template-columns: 1fr;
     }
 
+    .profile-info {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .profile-avatar {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+    }
+
     .export-buttons {
         flex-direction: column;
+    }
+
+    .export-buttons button {
+        width: 100%;
+    }
+
+    .month-selector {
+        flex-direction: column;
+    }
+
+    .month-selector select,
+    .month-selector input,
+    .month-selector button {
+        width: 100%;
+    }
+
+    .budget-card {
+        padding: 1rem;
+    }
+
+    .budget-stats {
+        font-size: 0.8rem;
+    }
+
+    .report-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .report-value {
+        font-size: 1.25rem;
+    }
+
+    .action-buttons {
+        justify-content: center;
+    }
+}
+
+/* ================================
+   RESPONSIVIDAD - SMALL MOBILE
+   ================================ */
+@media (max-width: 480px) {
+    .budget-title {
+        font-size: 1rem;
+    }
+
+    .profile-avatar {
+        width: 50px;
+        height: 50px;
+        font-size: 1.25rem;
+    }
+
+    .badge {
+        font-size: 0.65rem;
+        padding: 0.2rem 0.5rem;
     }
 }

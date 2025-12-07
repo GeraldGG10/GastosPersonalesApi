@@ -138,12 +138,14 @@ const ExpenseService = {
 
 const CategoryService = {
     getAll: () => API.get(API_CONFIG.ENDPOINTS.CATEGORIES),
-    create: (category) => API.post(API_CONFIG.ENDPOINTS.CATEGORIES, category)
+    create: (category) => API.post(API_CONFIG.ENDPOINTS.CATEGORIES, category),
+    delete: (id) => API.delete(`${API_CONFIG.ENDPOINTS.CATEGORIES}/${id}`)
 };
 
 const PaymentMethodService = {
     getAll: () => API.get(API_CONFIG.ENDPOINTS.PAYMENT_METHODS),
-    create: (method) => API.post(API_CONFIG.ENDPOINTS.PAYMENT_METHODS, method)
+    create: (method) => API.post(API_CONFIG.ENDPOINTS.PAYMENT_METHODS, method),
+    delete: (id) => API.delete(`${API_CONFIG.ENDPOINTS.PAYMENT_METHODS}/${id}`)
 };
 
 const BudgetService = {

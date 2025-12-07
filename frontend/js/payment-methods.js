@@ -61,6 +61,7 @@ function loadMethodsTable() {
             <td>
                 <div class="action-buttons">
                     <button class="btn-icon" onclick="editMethod(${method.id})" title="Editar">✏️</button>
+                    <button class="btn-icon" onclick="deleteMethod(${method.id})" title="Eliminar">🗑️</button>
                 </div>
             </td>
         </tr>
@@ -99,6 +100,22 @@ function editMethod(id) {
     document.getElementById('methodActive').checked = method.isActive;
     
     openModal('methodModal');
+}
+
+// ===============================
+// ELIMINAR MÉTODO DE PAGO
+// ===============================
+async function deleteMethod(id) {
+    if (!confirmAction('¿Está seguro de eliminar este método de pago?')) return;
+    
+    try {
+        await PaymentMethodService.delete(id);
+        showToast('Método de pago eliminado correctamente', 'success');
+        await loadPaymentMethods();
+    } catch (error) {
+        console.error('Error al eliminar método:', error);
+        showToast('Error al eliminar el método de pago', 'error');
+    }
 }
 
 function openModal(modalId) {

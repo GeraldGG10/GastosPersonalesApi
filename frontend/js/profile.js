@@ -36,11 +36,12 @@ async function loadProfile() {
     try {
         const profile = await AuthService.getProfile();
 
-        const email = profile.correo || localStorage.getItem('userEmail') || '-';
-        const name  = profile.correo || localStorage.getItem('userName')  || 'U';
+        // Los nombres correctos que devuelve el backend
+        const email = profile.correo || profile.email || localStorage.getItem('userEmail') || '-';
+        const name = profile.correo || profile.fullName || localStorage.getItem('userName') || 'Usuario';
 
         document.getElementById('userEmail').textContent = email;
-        document.getElementById('userName').textContent  = name;
+        document.getElementById('userName').textContent = name;
 
         // Iniciales
         const initials = name
@@ -50,7 +51,7 @@ async function loadProfile() {
             .toUpperCase()
             .substring(0, 2);
 
-        document.getElementById('userInitials').textContent = initials;
+        document.getElementById('userInitials').textContent = initials || 'U';
 
         // Pre-llenar form
         document.getElementById('newName').value = name;
@@ -59,23 +60,20 @@ async function loadProfile() {
         console.error('Error al cargar perfil:', error);
 
         // Backup de localStorage
-        const email = localStorage.getItem('userEmail');
-        const name  = localStorage.getItem('userName');
+        const email = localStorage.getItem('userEmail') || '-';
+        const name = localStorage.getItem('userName') || 'Usuario';
 
-        if (email) document.getElementById('userEmail').textContent = email;
+        document.getElementById('userEmail').textContent = email;
+        document.getElementById('userName').textContent = name;
+        document.getElementById('newName').value = name;
 
-        if (name) {
-            document.getElementById('userName').textContent = name;
-            document.getElementById('newName').value = name;
+        const initials = name.split(' ')
+            .map(n => n[0])
+            .join('')
+            .toUpperCase()
+            .substring(0, 2);
 
-            const initials = name.split(' ')
-                .map(n => n[0])
-                .join('')
-                .toUpperCase()
-                .substring(0, 2);
-
-            document.getElementById('userInitials').textContent = initials;
-        }
+        document.getElementById('userInitials').textContent = initials || 'U';
     }
 }
 
@@ -86,14 +84,23 @@ async function loadProfile() {
 async function handleUpdateName(e) {
     e.preventDefault();
 
-    const newName = document.getElementById('newName').value;
+    const newName = document.getElementById('newName').value.trim();
+
+    if (!newName) {
+        showToast('El nombre no puede estar vacío', 'error');
+        return;
+    }
 
     try {
-        await AuthService.updateProfile({ nombre: newName });
-        localStorage.setItem('userName', newName);
-
-        showToast('Nombre actualizado correctamente', 'success');
-        await loadProfile();
+        const result = await AuthService.updateProfile({ nombre: newName });
+        
+        if (result) {
+            localStorage.setItem('userName', newName);
+            showToast('Nombre actualizado correctamente', 'success');
+            await loadProfile();
+        } else {
+            showToast('No se pudo actualizar el nombre', 'error');
+        }
 
     } catch (error) {
         console.error('Error al actualizar nombre:', error);
@@ -108,9 +115,9 @@ async function handleUpdateName(e) {
 async function handleChangePassword(e) {
     e.preventDefault();
 
-    const currentPassword  = document.getElementById('currentPassword').value;
-    const newPassword      = document.getElementById('newPassword').value;
-    const confirmPassword  = document.getElementById('confirmPassword').value;
+    const currentPassword = document.getElementById('currentPassword').value;
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
 
     // Validaciones
     if (newPassword !== confirmPassword) {
@@ -124,13 +131,17 @@ async function handleChangePassword(e) {
     }
 
     try {
-        await AuthService.changePassword({
+        const result = await AuthService.changePassword({
             currentPassword,
             newPassword
         });
 
-        showToast('Contraseña cambiada correctamente', 'success');
-        document.getElementById('changePasswordForm').reset();
+        if (result) {
+            showToast('Contraseña cambiada correctamente', 'success');
+            document.getElementById('changePasswordForm').reset();
+        } else {
+            showToast('Contraseña actual incorrecta', 'error');
+        }
 
     } catch (error) {
         console.error('Error al cambiar contraseña:', error);

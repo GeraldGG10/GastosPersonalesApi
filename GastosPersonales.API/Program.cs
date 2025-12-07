@@ -1,10 +1,10 @@
-﻿using GastosPersonales.Application.Services.Implementations;
-using GastosPersonales.Application.Services.Interfaces;
-using GastosPersonales.Domain.Interfaces;
+﻿using GastosPersonales.Application.Services.Interfaces;
+using GastosPersonales.Application.Services.Implementations;
 using GastosPersonales.Infrastructure.Autenticacion;
 using GastosPersonales.Infrastructure.Persistencia;
 using GastosPersonales.Infrastructure.Repositories;
 using GastosPersonales.Infrastructure.Repositorios;
+using GastosPersonales.Domain.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -36,15 +36,19 @@ builder.Services.AddDbContext<AplicacionDbContext>(options =>
         ?? "Data Source=GastosDB.db"));
 
 // -----------------------------
-// 🔵 INYECCIÓN DE DEPENDENCIAS
+// 🔵 INYECCIÓN DE DEPENDENCIAS - REPOSITORIOS
 // -----------------------------
 builder.Services.AddScoped<IUsuarioRepositorio, UsuarioRepositorio>();
 builder.Services.AddScoped<ICategoriaRepositorio, CategoriaRepositorio>();
 builder.Services.AddScoped<IMetodoPagoRepositorio, MetodoPagoRepositorio>();
 builder.Services.AddScoped<IGastoRepositorio, GastoRepositorio>();
-builder.Services.AddScoped<IGeneradorJwt, GeneradorJwt>();
-builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
+builder.Services.AddScoped<IGeneradorJwt, GeneradorJwt>();
+
+// -----------------------------
+// 🔵 INYECCIÓN DE DEPENDENCIAS - SERVICIOS ✅
+// -----------------------------
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IExpenseService, ExpenseService>();
 builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<IBudgetService, BudgetService>();
@@ -87,7 +91,8 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new OpenApiInfo
     {
         Title = "GastosPersonales API",
-        Version = "v1"
+        Version = "v1",
+        Description = "API para gestión de gastos personales con autenticación JWT"
     });
 
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -122,17 +127,21 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 // -----------------------------
-// 🔵 AUTOMAPPER
+// 🔵 AUTOMAPPER (si lo usas)
 // -----------------------------
-builder.Services.AddAutoMapper(typeof(Program));
+// builder.Services.AddAutoMapper(typeof(Program));
 
 // -----------------------------
 // 🔵 CONTROLLERS
 // -----------------------------
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
 
 // -----------------------------
-// 🔵 APP
+// 🔵 BUILD APP
 // -----------------------------
 var app = builder.Build();
 
@@ -140,9 +149,20 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AplicacionDbContext>();
-    db.Database.EnsureCreated(); // Crea la BD si no existe
+    try
+    {
+        db.Database.EnsureCreated(); // Crea la BD si no existe
+        Console.WriteLine("✅ Base de datos creada/verificada correctamente");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"❌ Error al crear la base de datos: {ex.Message}");
+    }
 }
 
+// -----------------------------
+// 🔵 CONFIGURACIÓN DE DESARROLLO
+// -----------------------------
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
@@ -150,15 +170,20 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "GastosPersonales API v1");
+        // c.RoutePrefix = string.Empty; // Descomenta para poner Swagger en la raíz
     });
 }
 
 // -----------------------------
 // 🔵 MIDDLEWARES
 // -----------------------------
+app.UseHttpsRedirection();
 app.UseCors(MyCors);
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+Console.WriteLine("🚀 API de Gastos Personales iniciada correctamente");
+Console.WriteLine($"📊 Swagger UI disponible en: https://localhost:7262");
 
 app.Run();

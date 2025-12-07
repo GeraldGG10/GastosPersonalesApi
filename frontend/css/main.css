@@ -30,6 +30,7 @@
     --radius-lg: 20px;
     
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --sidebar-width: 250px;
 }
 
 * {
@@ -53,13 +54,14 @@ body {
     position: fixed;
     left: 0;
     top: 0;
-    width: 250px;
+    width: var(--sidebar-width);
     height: 100vh;
     background: var(--bg-secondary);
     border-right: 1px solid var(--border-color);
     padding: 2rem 0;
     z-index: 1000;
     overflow-y: auto;
+    transition: var(--transition);
 }
 
 .sidebar-header {
@@ -91,6 +93,7 @@ body {
     text-decoration: none;
     transition: var(--transition);
     position: relative;
+    white-space: nowrap;
 }
 
 .sidebar-menu a:hover {
@@ -114,9 +117,10 @@ body {
 }
 
 .main-content {
-    margin-left: 250px;
+    margin-left: var(--sidebar-width);
     padding: 2rem;
     min-height: 100vh;
+    transition: var(--transition);
 }
 
 .page-header {
@@ -144,6 +148,25 @@ body {
 .header-actions {
     display: flex;
     gap: 1rem;
+    flex-wrap: wrap;
+}
+
+/* ================================
+   HAMBURGER MENU (MOBILE)
+   ================================ */
+.menu-toggle {
+    display: none;
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 1001;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 0.75rem;
+    cursor: pointer;
+    color: var(--text-primary);
+    font-size: 1.5rem;
 }
 
 /* ================================
@@ -170,6 +193,8 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
 }
 
 .card-header h2 {
@@ -251,8 +276,10 @@ body {
     transition: var(--transition);
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.5rem;
     text-decoration: none;
+    white-space: nowrap;
 }
 
 .btn-primary {
@@ -298,11 +325,13 @@ body {
    ================================ */
 .table-container {
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .data-table {
     width: 100%;
     border-collapse: collapse;
+    min-width: 600px;
 }
 
 .data-table thead {
@@ -354,6 +383,7 @@ body {
     background: rgba(0, 0, 0, 0.8);
     backdrop-filter: blur(10px);
     animation: fadeIn 0.3s ease;
+    overflow-y: auto;
 }
 
 @keyframes fadeIn {
@@ -365,6 +395,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 1rem;
 }
 
 .modal-content {
@@ -418,6 +449,7 @@ body {
     display: flex;
     gap: 1rem;
     margin-top: 1.5rem;
+    flex-wrap: wrap;
 }
 
 /* ================================
@@ -435,6 +467,7 @@ body {
     z-index: 3000;
     display: none;
     animation: slideInRight 0.3s ease;
+    max-width: 90%;
 }
 
 @keyframes slideInRight {
@@ -489,28 +522,127 @@ body {
 }
 
 /* ================================
-   RESPONSIVE
+   RESPONSIVE - TABLET
    ================================ */
-@media (max-width: 768px) {
-    .sidebar {
-        transform: translateX(-100%);
-        transition: transform 0.3s ease;
+@media (max-width: 1024px) {
+    :root {
+        --sidebar-width: 220px;
     }
-    
-    .sidebar.active {
-        transform: translateX(0);
-    }
-    
-    .main-content {
-        margin-left: 0;
-        padding: 1rem;
-    }
-    
+
     .page-header h1 {
         font-size: 2rem;
     }
-    
-    .stats-grid {
-        grid-template-columns: 1fr;
+
+    .data-table {
+        min-width: 500px;
+    }
+}
+
+/* ================================
+   RESPONSIVE - MOBILE
+   ================================ */
+@media (max-width: 768px) {
+    :root {
+        --sidebar-width: 0px;
+    }
+
+    .menu-toggle {
+        display: block;
+    }
+
+    .sidebar {
+        transform: translateX(-100%);
+    }
+
+    .sidebar.active {
+        transform: translateX(0);
+    }
+
+    .main-content {
+        margin-left: 0;
+        padding: 1rem;
+        padding-top: 4rem;
+    }
+
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .page-header h1 {
+        font-size: 1.75rem;
+    }
+
+    .header-actions {
+        width: 100%;
+    }
+
+    .header-actions button {
+        flex: 1;
+    }
+
+    .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .modal-content {
+        width: 95%;
+        max-height: 85vh;
+    }
+
+    .modal-header h2 {
+        font-size: 1.25rem;
+    }
+
+    .modal-actions {
+        flex-direction: column;
+    }
+
+    .modal-actions button {
+        width: 100%;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .toast {
+        right: 1rem;
+        left: 1rem;
+        bottom: 1rem;
+    }
+
+    .data-table {
+        font-size: 0.875rem;
+    }
+
+    .data-table th,
+    .data-table td {
+        padding: 0.75rem 0.5rem;
+    }
+}
+
+/* ================================
+   RESPONSIVE - SMALL MOBILE
+   ================================ */
+@media (max-width: 480px) {
+    .page-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+
+    .data-table {
+        min-width: 400px;
+        font-size: 0.8rem;
+    }
+
+    .sidebar-header h2 {
+        font-size: 1.25rem;
     }
 }

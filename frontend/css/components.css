@@ -1,0 +1,337 @@
+/* ================================
+   FILTROS
+   ================================ */
+.filter-section {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+}
+
+.filter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    width: 100%;
+}
+
+.filter-actions {
+    display: flex;
+    gap: 1rem;
+    width: 100%;
+    margin-top: 1rem;
+}
+
+/* ================================
+   PROGRESS BARS
+   ================================ */
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 0.5rem 0;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--accent-gradient);
+    transition: width 0.5s ease;
+}
+
+.progress-fill.warning {
+    background: var(--warning);
+}
+
+.progress-fill.danger {
+    background: var(--danger);
+}
+
+/* ================================
+   BADGES (Etiquetas de Estado)
+   ================================ */
+.badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge.success {
+    background: rgba(48, 209, 88, 0.2);
+    color: var(--success);
+}
+
+.badge.warning {
+    background: rgba(255, 214, 10, 0.2);
+    color: var(--warning);
+}
+
+.badge.danger {
+    background: rgba(255, 69, 58, 0.2);
+    color: var(--danger);
+}
+
+.badge.info {
+    background: rgba(100, 210, 255, 0.2);
+    color: var(--info);
+}
+
+/* ================================
+   ACTION BUTTONS
+   ================================ */
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-icon {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: var(--radius-sm);
+    transition: var(--transition);
+    font-size: 1.25rem;
+}
+
+.btn-icon:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+}
+
+/* ================================
+   PROFILE
+   ================================ */
+.profile-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 1.5rem;
+}
+
+.profile-info {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--accent-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: 700;
+    color: white;
+}
+
+.profile-details p {
+    margin-bottom: 0.5rem;
+    color: var(--text-secondary);
+}
+
+.profile-details strong {
+    color: var(--text-primary);
+}
+
+/* ================================
+   MONTH SELECTOR
+   ================================ */
+.month-selector {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.month-selector select,
+.month-selector input {
+    flex: 1;
+    min-width: 150px;
+}
+
+/* ================================
+   EXPORT BUTTONS
+   ================================ */
+.export-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+/* ================================
+   IMPORT RESULT
+   ================================ */
+.import-result {
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: var(--radius-sm);
+    background: rgba(255, 255, 255, 0.05);
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.import-result.success {
+    background: rgba(48, 209, 88, 0.1);
+    border: 1px solid var(--success);
+}
+
+.import-result.error {
+    background: rgba(255, 69, 58, 0.1);
+    border: 1px solid var(--danger);
+}
+
+.import-result h4 {
+    margin-bottom: 0.5rem;
+}
+
+.import-result ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.import-result li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.import-result li:last-child {
+    border-bottom: none;
+}
+
+/* ================================
+   BUDGET CARDS
+   ================================ */
+.budget-card {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid var(--border-color);
+    transition: var(--transition);
+}
+
+.budget-card:hover {
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: var(--shadow-sm);
+}
+
+.budget-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.budget-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+.budget-amount {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.budget-progress {
+    margin-bottom: 0.75rem;
+}
+
+.budget-stats {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+/* ================================
+   REPORT CONTAINER
+   ================================ */
+.report-section {
+    margin: 1.5rem 0;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+}
+
+.report-section h3 {
+    margin-bottom: 1rem;
+    color: var(--accent-primary);
+}
+
+.report-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.report-item {
+    padding: 1rem;
+    background: var(--bg-card);
+    border-radius: var(--radius-sm);
+}
+
+.report-label {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+}
+
+.report-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* ================================
+   LOADING SPINNER
+   ================================ */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: var(--accent-primary);
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ================================
+   RESPONSIVIDAD (Media Queries)
+   ================================ */
+@media (max-width: 768px) {
+    .filter-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-actions {
+        flex-direction: column;
+    }
+
+    .profile-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .export-buttons {
+        flex-direction: column;
+    }
+}

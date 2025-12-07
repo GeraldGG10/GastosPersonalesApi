@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil - Gastos Personales</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <h2>Gastos App</h2>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="expenses.html">Gastos</a></li>
+            <li><a href="categories.html">Categorías</a></li>
+            <li><a href="payment-methods.html">Métodos de Pago</a></li>
+            <li><a href="budgets.html">Presupuestos</a></li>
+            <li><a href="reports.html">Reportes</a></li>
+            <li><a href="profile.html" class="active">Perfil</a></li>
+            <li><a href="#" id="logoutBtn">Cerrar Sesión</a></li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        <header class="page-header">
+            <h1>Mi Perfil</h1>
+        </header>
+
+        <div class="profile-grid">
+            <!-- Información del Usuario -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>Información Personal</h2>
+                </div>
+                <div class="card-body">
+                    <div class="profile-info">
+                        <div class="profile-avatar">
+                            <span id="userInitials">U</span>
+                        </div>
+                        <div class="profile-details">
+                            <p><strong>Email:</strong> <span id="userEmail">-</span></p>
+                            <p><strong>Nombre:</strong> <span id="userName">-</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actualizar Nombre -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>Actualizar Nombre</h2>
+                </div>
+                <div class="card-body">
+                    <form id="updateNameForm">
+                        <div class="form-group">
+                            <label for="newName">Nuevo Nombre</label>
+                            <input type="text" id="newName" required>
+                        </div>
+                        <button type="submit" class="btn-primary">Actualizar Nombre</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Cambiar Contraseña -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>Cambiar Contraseña</h2>
+                </div>
+                <div class="card-body">
+                    <form id="changePasswordForm">
+                        <div class="form-group">
+                            <label for="currentPassword">Contraseña Actual</label>
+                            <input type="password" id="currentPassword" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="newPassword">Nueva Contraseña</label>
+                            <input type="password" id="newPassword" required minlength="6">
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirmar Contraseña</label>
+                            <input type="password" id="confirmPassword" required minlength="6">
+                        </div>
+                        <button type="submit" class="btn-primary">Cambiar Contraseña</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="toast" class="toast"></div>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/profile.js"></script>
+</body>
+</html>

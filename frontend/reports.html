@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reportes - Gastos Personales</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <h2>Gastos App</h2>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="expenses.html">Gastos</a></li>
+            <li><a href="categories.html">Categorías</a></li>
+            <li><a href="payment-methods.html">Métodos de Pago</a></li>
+            <li><a href="budgets.html">Presupuestos</a></li>
+            <li><a href="reports.html" class="active">Reportes</a></li>
+            <li><a href="profile.html">Perfil</a></li>
+            <li><a href="#" id="logoutBtn">Cerrar Sesión</a></li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        <header class="page-header">
+            <h1>Reportes y Exportaciones</h1>
+        </header>
+
+        <div class="card">
+            <div class="card-header">
+                <h2>Filtros Avanzados</h2>
+            </div>
+            <div class="card-body">
+                <div class="filter-grid">
+                    <div class="form-group">
+                        <label for="startDate">Fecha Inicio</label>
+                        <input type="date" id="startDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="endDate">Fecha Fin</label>
+                        <input type="date" id="endDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="filterCategory">Categoría</label>
+                        <select id="filterCategory">
+                            <option value="">Todas</option>
+                            </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="filterPaymentMethod">Método de Pago</label>
+                        <select id="filterPaymentMethod">
+                            <option value="">Todos</option>
+                            </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="searchText">Búsqueda</label>
+                        <input type="text" id="searchText" placeholder="Buscar en descripción...">
+                    </div>
+                </div>
+                <div class="filter-actions">
+                    <button class="btn-primary" id="applyFiltersBtn">Aplicar Filtros</button>
+                    <button class="btn-secondary" id="clearFiltersBtn">Limpiar</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2>Resultados</h2>
+                <span id="resultsCount">0 gastos encontrados</span>
+            </div>
+            <div class="card-body">
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Descripción</th>
+                                <th>Monto</th>
+                                <th>Categoría</th>
+                                <th>Método</th>
+                            </tr>
+                        </thead>
+                        <tbody id="filteredExpensesBody">
+                            <tr>
+                                <td colspan="5" class="empty-state">Aplica filtros para ver resultados</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div> </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2>Reporte Mensual</h2>
+            </div>
+            <div class="card-body">
+                <div class="month-selector">
+                    <select id="reportMonth">
+                        <option value="1">Enero</option>
+                        <option value="2">Febrero</option>
+                        <option value="3">Marzo</option>
+                        <option value="4">Abril</option>
+                        <option value="5">Mayo</option>
+                        <option value="6">Junio</option>
+                        <option value="7">Julio</option>
+                        <option value="8">Agosto</option>
+                        <option value="9">Septiembre</option>
+                        <option value="10">Octubre</option>
+                        <option value="11">Noviembre</option>
+                        <option value="12">Diciembre</option>
+                    </select>
+                    <input type="number" id="reportYear" value="2024" min="2020" max="2030">
+                    <button class="btn-primary" id="generateReportBtn">Generar Reporte</button>
+                </div>
+                <div id="monthlyReportContainer">
+                    </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2>Exportar Datos</h2>
+            </div>
+            <div class="card-body">
+                <div class="export-buttons">
+                    <button class="btn-primary" id="exportExcelBtn">📊 Exportar Excel</button>
+                    <button class="btn-primary" id="exportJsonBtn">📄 Exportar JSON</button>
+                    <button class="btn-primary" id="exportTxtBtn">📝 Exportar TXT</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="toast" class="toast"></div>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/reports.js"></script>
+</body>
+</html>

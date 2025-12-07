@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presupuestos - Gastos Personales</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <h2>Gastos App</h2>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="expenses.html">Gastos</a></li>
+            <li><a href="categories.html">Categorías</a></li>
+            <li><a href="payment-methods.html">Métodos de Pago</a></li>
+            <li><a href="budgets.html" class="active">Presupuestos</a></li>
+            <li><a href="reports.html">Reportes</a></li>
+            <li><a href="profile.html">Perfil</a></li>
+            <li><a href="#" id="logoutBtn">Cerrar Sesión</a></li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        <header class="page-header">
+            <h1>Presupuestos</h1>
+            <button class="btn-primary" id="addBudgetBtn">+ Nuevo Presupuesto</button>
+        </header>
+
+        <div class="filter-section">
+            <div class="form-group">
+                <label for="filterMonth">Mes</label>
+                <select id="filterMonth">
+                    <option value="1">Enero</option>
+                    <option value="2">Febrero</option>
+                    <option value="3">Marzo</option>
+                    <option value="4">Abril</option>
+                    <option value="5">Mayo</option>
+                    <option value="6">Junio</option>
+                    <option value="7">Julio</option>
+                    <option value="8">Agosto</option>
+                    <option value="9">Septiembre</option>
+                    <option value="10">Octubre</option>
+                    <option value="11">Noviembre</option>
+                    <option value="12">Diciembre</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="filterYear">Año</label>
+                <input type="number" id="filterYear" value="2024" min="2020" max="2030">
+            </div>
+            <button class="btn-secondary" id="filterBudgetsBtn">Filtrar</button>
+            <button class="btn-secondary" id="checkExceededBtn">Ver Excedidos</button>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div id="budgetsContainer"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Agregar/Editar Presupuesto -->
+    <div id="budgetModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Nuevo Presupuesto</h2>
+                <span class="close">&times;</span>
+            </div>
+            <form id="budgetForm">
+                <div class="form-group">
+                    <label for="budgetCategory">Categoría *</label>
+                    <select id="budgetCategory" required>
+                        <option value="">Seleccione una categoría</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="budgetAmount">Monto *</label>
+                    <input type="number" id="budgetAmount" step="0.01" min="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="budgetMonth">Mes *</label>
+                    <select id="budgetMonth" required>
+                        <option value="1">Enero</option>
+                        <option value="2">Febrero</option>
+                        <option value="3">Marzo</option>
+                        <option value="4">Abril</option>
+                        <option value="5">Mayo</option>
+                        <option value="6">Junio</option>
+                        <option value="7">Julio</option>
+                        <option value="8">Agosto</option>
+                        <option value="9">Septiembre</option>
+                        <option value="10">Octubre</option>
+                        <option value="11">Noviembre</option>
+                        <option value="12">Diciembre</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="budgetYear">Año *</label>
+                    <input type="number" id="budgetYear" value="2024" min="2020" max="2030" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" id="cancelBudgetBtn">Cancelar</button>
+                    <button type="submit" class="btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/budgets.js"></script>
+</body>
+</html>

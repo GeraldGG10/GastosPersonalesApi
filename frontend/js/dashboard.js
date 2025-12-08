@@ -36,7 +36,7 @@ async function loadStats() {
         const monthExpenses = expenses.filter(e => {
             const expenseDate = new Date(e.date);
             return expenseDate.getMonth() + 1 === currentMonth && 
-                   expenseDate.getFullYear() === currentYear;
+                expenseDate.getFullYear() === currentYear;
         });
         
         const totalMonth = monthExpenses.reduce((sum, e) => sum + e.amount, 0);

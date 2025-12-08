@@ -38,7 +38,7 @@ async function loadProfile() {
 
         // Los nombres correctos que devuelve el backend
         const email = profile.correo || profile.email || localStorage.getItem('userEmail') || '-';
-        const name = profile.correo || profile.fullName || localStorage.getItem('userName') || 'Usuario';
+        const name = profile.fullName || profile.nombre || localStorage.getItem('userName') || 'Usuario';
 
         document.getElementById('userEmail').textContent = email;
         document.getElementById('userName').textContent = name;
@@ -93,7 +93,7 @@ async function handleUpdateName(e) {
 
     try {
         const result = await AuthService.updateProfile({ nombre: newName });
-        
+
         if (result) {
             localStorage.setItem('userName', newName);
             showToast('Nombre actualizado correctamente', 'success');

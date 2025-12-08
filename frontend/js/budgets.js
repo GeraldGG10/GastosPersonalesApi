@@ -9,7 +9,7 @@ let editingBudgetId = null;
 document.addEventListener('DOMContentLoaded', async () => {
     setDefaultMonthYear('filterMonth', 'filterYear');
     setDefaultMonthYear('budgetMonth', 'budgetYear');
-    
+
     await loadInitialData();
     setupEventListeners();
 });
@@ -22,15 +22,15 @@ function setupEventListeners() {
         setDefaultMonthYear('budgetMonth', 'budgetYear');
         openModal('budgetModal');
     });
-    
+
     document.getElementById('budgetForm').addEventListener('submit', handleBudgetSubmit);
     document.getElementById('filterBudgetsBtn').addEventListener('click', loadBudgets);
     document.getElementById('checkExceededBtn').addEventListener('click', showExceededBudgets);
-    
+
     document.querySelector('#budgetModal .close').addEventListener('click', () => {
         closeModal('budgetModal');
     });
-    
+
     document.getElementById('cancelBudgetBtn').addEventListener('click', () => {
         closeModal('budgetModal');
     });
@@ -57,38 +57,38 @@ async function loadBudgets() {
     try {
         const month = parseInt(document.getElementById('filterMonth').value);
         const year = parseInt(document.getElementById('filterYear').value);
-        
+
         budgets = await BudgetService.getAll();
         const expenses = await ExpenseService.getAll();
-        
+
         // Filtrar presupuestos por mes y año
         const filteredBudgets = budgets.filter(b => b.month === month && b.year === year);
-        
+
         const container = document.getElementById('budgetsContainer');
-        
+
         if (filteredBudgets.length === 0) {
             container.innerHTML = '<p class="empty-state">No hay presupuestos para este período</p>';
             return;
         }
-        
+
         container.innerHTML = filteredBudgets.map(budget => {
             const category = categories.find(c => c.id === budget.categoryId);
-            
+
             // Calcular gasto acumulado
             const categoryExpenses = expenses.filter(e => {
                 const expenseDate = new Date(e.date);
                 return e.categoryId === budget.categoryId &&
-                       expenseDate.getMonth() + 1 === month &&
-                       expenseDate.getFullYear() === year;
+                    expenseDate.getMonth() + 1 === month &&
+                    expenseDate.getFullYear() === year;
             });
-            
+
             const spent = categoryExpenses.reduce((sum, e) => sum + e.amount, 0);
             const percentage = budget.amount > 0 ? (spent / budget.amount) * 100 : 0;
             const remaining = budget.amount - spent;
-            
+
             let progressClass = '';
             let statusText = 'OK';
-            
+
             if (percentage >= 100) {
                 progressClass = 'danger';
                 statusText = 'EXCEDIDO';
@@ -99,7 +99,7 @@ async function loadBudgets() {
                 progressClass = 'warning';
                 statusText = 'ADVERTENCIA';
             }
-            
+
             return `
                 <div class="budget-card">
                     <div class="budget-header">
@@ -137,14 +137,14 @@ async function loadBudgets() {
 
 async function handleBudgetSubmit(e) {
     e.preventDefault();
-    
+
     const budgetData = {
         categoryId: parseInt(document.getElementById('budgetCategory').value),
         amount: parseFloat(document.getElementById('budgetAmount').value),
         month: parseInt(document.getElementById('budgetMonth').value),
         year: parseInt(document.getElementById('budgetYear').value)
     };
-    
+
     try {
         if (editingBudgetId) {
             await BudgetService.update(editingBudgetId, budgetData);
@@ -153,7 +153,7 @@ async function handleBudgetSubmit(e) {
             await BudgetService.create(budgetData);
             showToast('Presupuesto creado correctamente', 'success');
         }
-        
+
         closeModal('budgetModal');
         await loadBudgets();
     } catch (error) {
@@ -165,21 +165,21 @@ async function handleBudgetSubmit(e) {
 function editBudget(id) {
     editingBudgetId = id;
     const budget = budgets.find(b => b.id === id);
-    
+
     if (!budget) return;
-    
+
     document.getElementById('modalTitle').textContent = 'Editar Presupuesto';
     document.getElementById('budgetCategory').value = budget.categoryId;
     document.getElementById('budgetAmount').value = budget.amount;
     document.getElementById('budgetMonth').value = budget.month;
     document.getElementById('budgetYear').value = budget.year;
-    
+
     openModal('budgetModal');
 }
 
 async function deleteBudget(id) {
     if (!confirmAction('¿Está seguro de eliminar este presupuesto?')) return;
-    
+
     try {
         await BudgetService.delete(id);
         showToast('Presupuesto eliminado correctamente', 'success');
@@ -194,16 +194,16 @@ async function showExceededBudgets() {
     try {
         const month = parseInt(document.getElementById('filterMonth').value);
         const year = parseInt(document.getElementById('filterYear').value);
-        
+
         const exceeded = await BudgetService.getExceeded(month, year);
-        
+
         const container = document.getElementById('budgetsContainer');
-        
+
         if (!exceeded || exceeded.length === 0) {
             container.innerHTML = '<p class="empty-state">No hay presupuestos excedidos o en advertencia</p>';
             return;
         }
-        
+
         container.innerHTML = `
             <div class="card">
                 <div class="card-header">
@@ -211,14 +211,14 @@ async function showExceededBudgets() {
                 </div>
                 <div class="card-body">
                     ${exceeded.map(budget => {
-                        const category = categories.find(c => c.id === budget.categoryId);
-                        
-                        let badgeClass = 'success';
-                        if (budget.status === 'EXCEDIDO') badgeClass = 'danger';
-                        else if (budget.status === 'CRÍTICO') badgeClass = 'warning';
-                        else if (budget.status === 'ADVERTENCIA') badgeClass = 'warning';
-                        
-                        return `
+            const category = categories.find(c => c.id === budget.categoryId);
+
+            let badgeClass = 'success';
+            if (budget.status === 'EXCEDIDO') badgeClass = 'danger';
+            else if (budget.status === 'CRÍTICO') badgeClass = 'warning';
+            else if (budget.status === 'ADVERTENCIA') badgeClass = 'warning';
+
+            return `
                             <div class="budget-card">
                                 <div class="budget-header">
                                     <div>
@@ -241,11 +241,11 @@ async function showExceededBudgets() {
                                 </div>
                             </div>
                         `;
-                    }).join('')}
+        }).join('')}
                 </div>
             </div>
         `;
-        
+
         showToast('Mostrando presupuestos excedidos', 'info');
     } catch (error) {
         console.error('Error al cargar presupuestos excedidos:', error);

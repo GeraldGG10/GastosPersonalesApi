@@ -43,6 +43,7 @@ builder.Services.AddScoped<ICategoriaRepositorio, CategoriaRepositorio>();
 builder.Services.AddScoped<IMetodoPagoRepositorio, MetodoPagoRepositorio>();
 builder.Services.AddScoped<IGastoRepositorio, GastoRepositorio>();
 builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
+builder.Services.AddScoped<IBudgetRepository, BudgetRepository>();
 builder.Services.AddScoped<IGeneradorJwt, GeneradorJwt>();
 
 // -----------------------------
@@ -146,19 +147,33 @@ builder.Services.AddControllers()
 var app = builder.Build();
 
 // ✅ CREAR BASE DE DATOS AUTOMÁTICAMENTE AL INICIAR
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<AplicacionDbContext>();
-    try
+    using (var scope = app.Services.CreateScope())
     {
-        db.Database.EnsureCreated(); // Crea la BD si no existe
-        Console.WriteLine("✅ Base de datos creada/verificada correctamente");
+        var db = scope.ServiceProvider.GetRequiredService<AplicacionDbContext>();
+        try
+        {
+            db.Database.EnsureCreated(); // Crea la BD si no existe
+            
+            // 🚑 FIX MANUAL: Crear tabla Budgets si no existe (porque EnsureCreated no actualiza esquemas existentes)
+            // Usamos TEXT para Amount porque es decimal y SQLite lo guarda así por defecto en EF Core
+            var sql = @"
+                CREATE TABLE IF NOT EXISTS ""Budgets"" (
+                    ""Id"" INTEGER NOT NULL CONSTRAINT ""PK_Budgets"" PRIMARY KEY AUTOINCREMENT,
+                    ""CategoryId"" INTEGER NOT NULL,
+                    ""Amount"" TEXT NOT NULL,
+                    ""Month"" INTEGER NOT NULL,
+                    ""Year"" INTEGER NOT NULL,
+                    ""UserId"" INTEGER NOT NULL
+                );";
+            db.Database.ExecuteSqlRaw(sql);
+
+            Console.WriteLine("✅ Base de datos creada/verificada correctamente (incluyendo Budgets)");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ Error al crear la base de datos: {ex.Message}");
+        }
     }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"❌ Error al crear la base de datos: {ex.Message}");
-    }
-}
 
 // -----------------------------
 // 🔵 CONFIGURACIÓN DE DESARROLLO

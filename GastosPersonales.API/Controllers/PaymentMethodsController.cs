@@ -33,6 +33,15 @@ namespace GastosPersonales.API.Controllers
             return Ok(method);
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] PaymentMethodDTO dto)
+        {
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+            var method = await _service.Update(id, dto, userId);
+            if (method == null) return NotFound(new { Message = "Método de pago no encontrado" });
+            return Ok(method);
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

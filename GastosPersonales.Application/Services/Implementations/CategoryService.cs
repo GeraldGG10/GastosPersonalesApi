@@ -1,53 +1,100 @@
 using GastosPersonales.Application.Models;
 using GastosPersonales.Application.Services.Interfaces;
+using GastosPersonales.Domain.Entities;
+using GastosPersonales.Domain.Interfaces;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace GastosPersonales.Application.Services.Implementations
 {
     public class CategoryService : ICategoryService
     {
-        private static List<Category> _categories = new List<Category>();
-        private static int _nextId = 1;
+        private readonly ICategoriaRepositorio _repositorio;
+
+        public CategoryService(ICategoriaRepositorio repositorio)
+        {
+            _repositorio = repositorio;
+        }
 
         public async Task<Category> Create(CategoryDTO dto, int userId)
         {
-            var category = new Category
+            var category = new Categoria
             {
-                Id = _nextId++,
-                Name = dto.Name,
-                IsActive = dto.IsActive,
-                UserId = userId
+                Nombre = dto.Name,
+                UsuarioId = userId,
+                // IsActive se asume true o se agrega a la entidad si es necesario. 
+                // Revisando entidad Categoria: public string Nombre { get; set; } = ""; public int UsuarioId { get; set; }
+                // La entidad no tiene IsActive actualmente. Lo omitiremos o agregaremos en un futuro si se pide explicitamente.
             };
-            _categories.Add(category);
-            return await Task.FromResult(category);
+
+            await _repositorio.AgregarAsync(category);
+
+            // Mapear de vuelta a modelo de aplicación (si es necesario) o retornar DTO/Entidad mapeada
+            return new Category
+            {
+                Id = category.Id,
+                Name = category.Nombre,
+                IsActive = true, // Default
+                UserId = category.UsuarioId
+            };
         }
 
         public async Task<bool> Delete(int id, int userId)
         {
-            var cat = _categories.FirstOrDefault(c => c.Id == id && c.UserId == userId);
-            if(cat == null) return await Task.FromResult(false);
-            _categories.Remove(cat);
-            return await Task.FromResult(true);
+            var cat = await _repositorio.ObtenerPorIdAsync(id);
+            if (cat == null || cat.UsuarioId != userId) return false;
+
+            await _repositorio.EliminarAsync(cat);
+            return true;
         }
 
         public async Task<IEnumerable<Category>> GetAll(int userId)
         {
-            return await Task.FromResult(_categories.Where(c => c.UserId == userId));
+            var categorias = await _repositorio.ObtenerPorUsuarioIdAsync(userId);
+            // Mapear entidad a modelo
+            var result = new List<Category>();
+            foreach (var c in categorias)
+            {
+                result.Add(new Category
+                {
+                    Id = c.Id,
+                    Name = c.Nombre,
+                    IsActive = true,
+                    UserId = c.UsuarioId
+                });
+            }
+            return result;
         }
 
         public async Task<Category> GetById(int id, int userId)
         {
-            return await Task.FromResult(_categories.FirstOrDefault(c => c.Id == id && c.UserId == userId));
+            var cat = await _repositorio.ObtenerPorIdAsync(id);
+            if (cat == null || cat.UsuarioId != userId) return null;
+
+            return new Category
+            {
+                Id = cat.Id,
+                Name = cat.Nombre,
+                IsActive = true,
+                UserId = cat.UsuarioId
+            };
         }
 
         public async Task<Category> Update(int id, CategoryDTO dto, int userId)
         {
-            var cat = _categories.FirstOrDefault(c => c.Id == id && c.UserId == userId);
-            if(cat != null)
+            var cat = await _repositorio.ObtenerPorIdAsync(id);
+            if (cat == null || cat.UsuarioId != userId) return null;
+
+            cat.Nombre = dto.Name;
+            await _repositorio.ActualizarAsync(cat);
+
+            return new Category
             {
-                cat.Name = dto.Name;
-                cat.IsActive = dto.IsActive;
-            }
-            return await Task.FromResult(cat);
+                Id = cat.Id,
+                Name = cat.Nombre,
+                IsActive = true,
+                UserId = cat.UsuarioId
+            };
         }
     }
 }

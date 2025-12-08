@@ -1,60 +1,67 @@
 ﻿using GastosPersonales.Application.Models;
 using GastosPersonales.Application.Services.Interfaces;
+using GastosPersonales.Domain.Interfaces;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+
+// Alias to avoid ambiguity
+using DomainBudget = GastosPersonales.Domain.Entities.Budget;
+using AppBudget = GastosPersonales.Application.Models.Budget;
 
 namespace GastosPersonales.Application.Services.Implementations
 {
     public class BudgetService : IBudgetService
     {
-        private static List<Budget> _budgets = new List<Budget>();
+        private readonly IBudgetRepository _repository;
         private readonly IExpenseService _expenseService;
 
-        public BudgetService(IExpenseService expenseService)
+        public BudgetService(IBudgetRepository repository, IExpenseService expenseService)
         {
+            _repository = repository;
             _expenseService = expenseService;
         }
 
-        public async Task<Budget> Create(BudgetDTO dto, int userId)
+        public async Task<AppBudget> Create(BudgetDTO dto, int userId)
         {
-            // Generar ID basado en el máximo existente + 1
-            int nextId = _budgets.Any() ? _budgets.Max(b => b.Id) + 1 : 1;
-
-            var budget = new Budget
+            var budgetEntity = new DomainBudget
             {
-                Id = nextId,
                 CategoryId = dto.CategoryId,
                 Amount = dto.Amount,
                 Month = dto.Month,
                 Year = dto.Year,
                 UserId = userId
             };
-            _budgets.Add(budget);
-            return await Task.FromResult(budget);
+
+            await _repository.AddAsync(budgetEntity);
+
+            return MapToModel(budgetEntity);
         }
 
-        public async Task<IEnumerable<Budget>> GetAll(int userId)
+        public async Task<IEnumerable<AppBudget>> GetAll(int userId)
         {
-            return await Task.FromResult(_budgets.Where(b => b.UserId == userId));
+            var budgets = await _repository.GetByUserIdAsync(userId);
+            return budgets.Select(MapToModel);
         }
 
-        public async Task<Budget> GetByCategoryMonth(int categoryId, int month, int year, int userId)
+        public async Task<AppBudget> GetByCategoryMonth(int categoryId, int month, int year, int userId)
         {
-            var budget = _budgets.FirstOrDefault(b =>
+            var budgets = await _repository.GetByUserIdAsync(userId);
+            var budget = budgets.FirstOrDefault(b =>
                 b.CategoryId == categoryId &&
                 b.Month == month &&
-                b.Year == year &&
-                b.UserId == userId);
+                b.Year == year);
 
             if (budget == null)
                 throw new KeyNotFoundException($"Budget not found for category {categoryId}, month {month}, year {year}");
 
-            return await Task.FromResult(budget);
+            return MapToModel(budget);
         }
 
-        public async Task<Budget> Update(int id, BudgetDTO dto, int userId)
+        public async Task<AppBudget> Update(int id, BudgetDTO dto, int userId)
         {
-            var budget = _budgets.FirstOrDefault(b => b.Id == id && b.UserId == userId);
-            if (budget == null)
+            var budget = await _repository.GetByIdAsync(id);
+            if (budget == null || budget.UserId != userId)
                 throw new KeyNotFoundException($"Budget with id {id} not found");
 
             budget.CategoryId = dto.CategoryId;
@@ -62,25 +69,27 @@ namespace GastosPersonales.Application.Services.Implementations
             budget.Month = dto.Month;
             budget.Year = dto.Year;
 
-            return await Task.FromResult(budget);
+            await _repository.UpdateAsync(budget);
+
+            return MapToModel(budget);
         }
 
         public async Task<bool> Delete(int id, int userId)
         {
-            var budget = _budgets.FirstOrDefault(b => b.Id == id && b.UserId == userId);
-            if (budget == null) return false;
+            var budget = await _repository.GetByIdAsync(id);
+            if (budget == null || budget.UserId != userId) return false;
 
-            _budgets.Remove(budget);
-            return await Task.FromResult(true);
+            await _repository.DeleteAsync(budget);
+            return true;
         }
 
         public async Task<decimal> CalculateSpentPercentage(int categoryId, int month, int year, int userId)
         {
-            var budget = _budgets.FirstOrDefault(b =>
+            var budgets = await _repository.GetByUserIdAsync(userId);
+            var budget = budgets.FirstOrDefault(b =>
                 b.CategoryId == categoryId &&
                 b.Month == month &&
-                b.Year == year &&
-                b.UserId == userId);
+                b.Year == year);
 
             if (budget == null || budget.Amount == 0)
                 return 0;
@@ -97,10 +106,10 @@ namespace GastosPersonales.Application.Services.Implementations
 
         public async Task<IEnumerable<object>> GetExceededBudgets(int month, int year, int userId)
         {
-            var userBudgets = _budgets.Where(b =>
+            var allBudgets = await _repository.GetByUserIdAsync(userId);
+            var userBudgets = allBudgets.Where(b =>
                 b.Month == month &&
-                b.Year == year &&
-                b.UserId == userId);
+                b.Year == year).ToList();
 
             var expenses = await _expenseService.GetAll(userId);
 
@@ -131,16 +140,28 @@ namespace GastosPersonales.Application.Services.Implementations
                     CategoryId = budget.CategoryId,
                     BudgetAmount = budget.Amount,
                     SpentAmount = categoryExpenses,
-                    Percentage = Math.Round(percentage, 2),
+                    Percentage = System.Math.Round(percentage, 2),
                     Status = status,
                     Remaining = budget.Amount - categoryExpenses
                 });
             }
 
-            // Retornar solo los que están en advertencia o peor
             return exceededList
                 .Where(b => ((dynamic)b).Percentage >= 50)
                 .OrderByDescending(b => ((dynamic)b).Percentage);
+        }
+
+        private AppBudget MapToModel(DomainBudget entity)
+        {
+            return new AppBudget
+            {
+                Id = entity.Id,
+                CategoryId = entity.CategoryId,
+                Amount = entity.Amount,
+                Month = entity.Month,
+                Year = entity.Year,
+                UserId = entity.UserId
+            };
         }
     }
 }

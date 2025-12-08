@@ -10,5 +10,6 @@ namespace GastosPersonales.Infrastructure.Persistencia
         public DbSet<Gasto> Gastos => Set<Gasto>();
         public DbSet<MetodoPago> MetodosPago => Set<MetodoPago>();
         public DbSet<Expense> Expenses => Set<Expense>();
+        public DbSet<Budget> Budgets => Set<Budget>();
     }
 }

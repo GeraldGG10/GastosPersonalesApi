@@ -33,6 +33,15 @@ namespace GastosPersonales.API.Controllers
             return Ok(category);
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] CategoryDTO dto)
+        {
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+            var category = await _service.Update(id, dto, userId);
+            if (category == null) return NotFound(new { Message = "Categoría no encontrada" });
+            return Ok(category);
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

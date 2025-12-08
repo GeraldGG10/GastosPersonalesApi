@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 // Eventos
 // ===============================
 function initEventListeners() {
-    
+
     // Abrir modal crear
     document.getElementById('addCategoryBtn')
         .addEventListener('click', () => {
@@ -30,15 +30,15 @@ function initEventListeners() {
             resetModal();
             openModal('categoryModal');
         });
-    
+
     // Guardar
     document.getElementById('categoryForm')
         .addEventListener('submit', handleCategorySubmit);
-    
+
     // Cerrar modal
     document.querySelector('#categoryModal .close')
         .addEventListener('click', () => closeModal('categoryModal'));
-    
+
     document.getElementById('cancelCategoryBtn')
         .addEventListener('click', () => closeModal('categoryModal'));
 }
@@ -104,7 +104,6 @@ function renderCategoriesTable() {
 // Guardar
 // ===============================
 async function handleCategorySubmit(event) {
-
     event.preventDefault();
 
     const categoryData = {
@@ -113,8 +112,14 @@ async function handleCategorySubmit(event) {
     };
 
     try {
-        await CategoryService.create(categoryData);
-        showToast('Categoría guardada correctamente', 'success');
+        if (editingCategoryId) {
+            await CategoryService.update(editingCategoryId, categoryData);
+            showToast('Categoría actualizada correctamente', 'success');
+        } else {
+            await CategoryService.create(categoryData);
+            showToast('Categoría creada correctamente', 'success');
+        }
+
         closeModal('categoryModal');
         await loadCategories();
 
@@ -146,7 +151,7 @@ function editCategory(id) {
 // ===============================
 async function deleteCategory(id) {
     if (!confirmAction('¿Está seguro de eliminar esta categoría?')) return;
-    
+
     try {
         await CategoryService.delete(id);
         showToast('Categoría eliminada correctamente', 'success');

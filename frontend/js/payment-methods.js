@@ -18,13 +18,13 @@ function setupEventListeners() {
         document.getElementById('methodActive').checked = true;
         openModal('methodModal');
     });
-    
+
     document.getElementById('methodForm').addEventListener('submit', handleMethodSubmit);
-    
+
     document.querySelector('#methodModal .close').addEventListener('click', () => {
         closeModal('methodModal');
     });
-    
+
     document.getElementById('cancelMethodBtn').addEventListener('click', () => {
         closeModal('methodModal');
     });
@@ -42,12 +42,12 @@ async function loadPaymentMethods() {
 
 function loadMethodsTable() {
     const tbody = document.getElementById('methodsTableBody');
-    
+
     if (paymentMethods.length === 0) {
         tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No hay métodos de pago registrados</td></tr>';
         return;
     }
-    
+
     tbody.innerHTML = paymentMethods.map(method => `
         <tr>
             <td>${method.id}</td>
@@ -70,16 +70,22 @@ function loadMethodsTable() {
 
 async function handleMethodSubmit(e) {
     e.preventDefault();
-    
+
     const methodData = {
         name: document.getElementById('methodName').value,
         icon: document.getElementById('methodIcon').value,
         isActive: document.getElementById('methodActive').checked
     };
-    
+
     try {
-        await PaymentMethodService.create(methodData);
-        showToast('Método de pago guardado correctamente', 'success');
+        if (editingMethodId) {
+            await PaymentMethodService.update(editingMethodId, methodData);
+            showToast('Método de pago actualizado correctamente', 'success');
+        } else {
+            await PaymentMethodService.create(methodData);
+            showToast('Método de pago guardado correctamente', 'success');
+        }
+
         closeModal('methodModal');
         await loadPaymentMethods();
     } catch (error) {
@@ -91,14 +97,14 @@ async function handleMethodSubmit(e) {
 function editMethod(id) {
     editingMethodId = id;
     const method = paymentMethods.find(m => m.id === id);
-    
+
     if (!method) return;
-    
+
     document.getElementById('modalTitle').textContent = 'Editar Método de Pago';
     document.getElementById('methodName').value = method.name;
     document.getElementById('methodIcon').value = method.icon || '';
     document.getElementById('methodActive').checked = method.isActive;
-    
+
     openModal('methodModal');
 }
 
@@ -107,7 +113,7 @@ function editMethod(id) {
 // ===============================
 async function deleteMethod(id) {
     if (!confirmAction('¿Está seguro de eliminar este método de pago?')) return;
-    
+
     try {
         await PaymentMethodService.delete(id);
         showToast('Método de pago eliminado correctamente', 'success');

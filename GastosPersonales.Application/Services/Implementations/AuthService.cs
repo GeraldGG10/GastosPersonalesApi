@@ -1,11 +1,12 @@
 ﻿using GastosPersonales.Application.Services.Interfaces;
 using GastosPersonales.Application.DTOs.Auth;
+using GastosPersonales.Domain.Interfaces;
+using GastosPersonales.Domain.Entities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,118 +16,128 @@ namespace GastosPersonales.Application.Services.Implementations
     public class AuthService : IAuthService
     {
         private readonly IConfiguration _configuration;
+        private readonly IUsuarioRepositorio _usuarioRepositorio;
 
-        // Simulación de base de datos en memoria (temporal)
-        private static List<UserData> _users = new List<UserData>();
-
-        public AuthService(IConfiguration configuration)
+        public AuthService(IConfiguration configuration, IUsuarioRepositorio usuarioRepositorio)
         {
             _configuration = configuration;
+            _usuarioRepositorio = usuarioRepositorio;
         }
 
-        public Task<AuthResponse> Register(RegisterRequest request)
+        public async Task<AuthResponse> Register(RegisterRequest request)
         {
             // Verificar si ya existe
-            if (_users.Any(u => u.Email == request.Email))
+            var existingUser = await _usuarioRepositorio.ObtenerPorCorreoAsync(request.Email);
+            if (existingUser != null)
             {
-                return Task.FromResult(new AuthResponse
+                return new AuthResponse
                 {
                     Token = string.Empty,
                     Email = string.Empty,
                     FullName = string.Empty
-                });
+                };
             }
 
             // Crear usuario con hash
             var passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
-            var user = new UserData
+            var user = new Usuario
             {
-                Id = _users.Count + 1,
-                FullName = request.FullName,
-                Email = request.Email,
+                Nombre = request.FullName,
+                Correo = request.Email,
                 PasswordHash = passwordHash
             };
 
-            _users.Add(user);
+            await _usuarioRepositorio.AgregarAsync(user);
 
             // Generar token JWT real
             var token = GenerateJwtToken(user);
 
-            var response = new AuthResponse
+            return new AuthResponse
             {
                 Token = token,
-                Email = user.Email,
-                FullName = user.FullName
+                Email = user.Correo,
+                FullName = user.Nombre
             };
-
-            return Task.FromResult(response);
         }
 
-        public Task<AuthResponse> Login(LoginRequest request)
+        public async Task<AuthResponse> Login(LoginRequest request)
         {
-            var user = _users.FirstOrDefault(u => u.Email == request.Email);
+            var user = await _usuarioRepositorio.ObtenerPorCorreoAsync(request.Email);
 
             if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
             {
-                return Task.FromResult(new AuthResponse
+                return new AuthResponse
                 {
                     Token = string.Empty,
                     Email = string.Empty,
                     FullName = string.Empty
-                });
+                };
             }
 
             // Generar token JWT real
             var token = GenerateJwtToken(user);
 
-            var response = new AuthResponse
+            return new AuthResponse
             {
                 Token = token,
-                Email = user.Email,
-                FullName = user.FullName
+                Email = user.Correo,
+                FullName = user.Nombre
             };
-
-            return Task.FromResult(response);
         }
 
-        public Task<bool> UpdateProfile(int userId, UpdateProfileDTO dto)
+        public async Task<bool> UpdateProfile(int userId, UpdateProfileDTO dto)
         {
-            var user = _users.FirstOrDefault(u => u.Id == userId);
-            if (user == null) return Task.FromResult(false);
+            var user = await _usuarioRepositorio.ObtenerPorIdAsync(userId);
+            if (user == null) return false;
 
-            user.FullName = dto.Nombre;
-            return Task.FromResult(true);
+            user.Nombre = dto.Nombre;
+            await _usuarioRepositorio.ActualizarAsync(user);
+            return true;
         }
 
-        public Task<bool> ChangePassword(int userId, ChangePasswordDTO dto)
+        public async Task<bool> ChangePassword(int userId, ChangePasswordDTO dto)
         {
-            var user = _users.FirstOrDefault(u => u.Id == userId);
-            if (user == null) return Task.FromResult(false);
+            var user = await _usuarioRepositorio.ObtenerPorIdAsync(userId);
+            if (user == null) return false;
 
             // Verificar contraseña actual
             if (!BCrypt.Net.BCrypt.Verify(dto.CurrentPassword, user.PasswordHash))
             {
-                return Task.FromResult(false);
+                return false;
             }
 
             // Actualizar contraseña
             user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
-            return Task.FromResult(true);
+            await _usuarioRepositorio.ActualizarAsync(user);
+            return true;
+        }
+
+        public async Task<UserProfileDTO?> GetProfile(int userId)
+        {
+            var user = await _usuarioRepositorio.ObtenerPorIdAsync(userId);
+            if (user == null) return null;
+
+            return new UserProfileDTO
+            {
+                Id = user.Id,
+                Email = user.Correo,
+                FullName = user.Nombre
+            };
         }
 
         // ✅ MÉTODO NUEVO: Generar token JWT real
-        private string GenerateJwtToken(UserData user)
+        private string GenerateJwtToken(Usuario user)
         {
             var securityKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(_configuration["Jwt:Key"] ?? "tu-clave-secreta-super-segura-de-al-menos-32-caracteres")
+                Encoding.UTF8.GetBytes(_configuration["Jwt:Key"] ?? "tu-clave-secreta-super-segura-de-al-menos-32-caracteres-para-jwt")
             );
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             var claims = new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Name, user.FullName),
+                new Claim(ClaimTypes.Email, user.Correo),
+                new Claim(ClaimTypes.Name, user.Nombre),
                 new Claim("sub", user.Id.ToString()) // Para compatibilidad
             };
 
@@ -139,15 +150,6 @@ namespace GastosPersonales.Application.Services.Implementations
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-
-        // Clase interna para almacenar usuarios temporalmente
-        private class UserData
-        {
-            public int Id { get; set; }
-            public string FullName { get; set; } = string.Empty;
-            public string Email { get; set; } = string.Empty;
-            public string PasswordHash { get; set; } = string.Empty;
         }
     }
 }

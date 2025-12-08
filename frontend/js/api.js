@@ -3,15 +3,15 @@
 // Función genérica para hacer peticiones HTTP
 async function fetchAPI(endpoint, options = {}) {
     const token = getToken();
-    
+
     const defaultHeaders = {
         'Content-Type': 'application/json'
     };
-    
+
     if (token) {
         defaultHeaders['Authorization'] = `Bearer ${token}`;
     }
-    
+
     const config = {
         ...options,
         headers: {
@@ -19,28 +19,28 @@ async function fetchAPI(endpoint, options = {}) {
             ...options.headers
         }
     };
-    
+
     try {
         const response = await fetch(`${API_CONFIG.BASE_URL}${endpoint}`, config);
-        
+
         // Si es 401, redirigir al login
         if (response.status === 401) {
             removeToken();
             window.location.href = 'index.html';
             return null;
         }
-        
+
         // Si es 204 No Content, retornar true
         if (response.status === 204) {
             return { success: true };
         }
-        
+
         const data = await response.json();
-        
+
         if (!response.ok) {
             throw new Error(data.Message || data.message || 'Error en la petición');
         }
-        
+
         return data;
     } catch (error) {
         console.error('API Error:', error);
@@ -51,73 +51,73 @@ async function fetchAPI(endpoint, options = {}) {
 // Métodos HTTP
 const API = {
     get: (endpoint) => fetchAPI(endpoint, { method: 'GET' }),
-    
+
     post: (endpoint, body) => fetchAPI(endpoint, {
         method: 'POST',
         body: JSON.stringify(body)
     }),
-    
+
     put: (endpoint, body) => fetchAPI(endpoint, {
         method: 'PUT',
         body: JSON.stringify(body)
     }),
-    
+
     delete: (endpoint) => fetchAPI(endpoint, { method: 'DELETE' }),
-    
+
     // Para subir archivos
     uploadFile: async (endpoint, formData) => {
         const token = getToken();
         const headers = {};
-        
+
         if (token) {
             headers['Authorization'] = `Bearer ${token}`;
         }
-        
+
         try {
             const response = await fetch(`${API_CONFIG.BASE_URL}${endpoint}`, {
                 method: 'POST',
                 headers: headers,
                 body: formData
             });
-            
+
             if (response.status === 401) {
                 removeToken();
                 window.location.href = 'index.html';
                 return null;
             }
-            
+
             const data = await response.json();
-            
+
             if (!response.ok) {
                 throw new Error(data.Message || data.message || 'Error al subir archivo');
             }
-            
+
             return data;
         } catch (error) {
             console.error('Upload Error:', error);
             throw error;
         }
     },
-    
+
     // Para descargar archivos
     downloadFile: async (endpoint) => {
         const token = getToken();
         const headers = {};
-        
+
         if (token) {
             headers['Authorization'] = `Bearer ${token}`;
         }
-        
+
         try {
             const response = await fetch(`${API_CONFIG.BASE_URL}${endpoint}`, {
                 method: 'GET',
                 headers: headers
             });
-            
+
             if (!response.ok) {
                 throw new Error('Error al descargar archivo');
             }
-            
+
             return response.blob();
         } catch (error) {
             console.error('Download Error:', error);
@@ -139,18 +139,20 @@ const ExpenseService = {
 const CategoryService = {
     getAll: () => API.get(API_CONFIG.ENDPOINTS.CATEGORIES),
     create: (category) => API.post(API_CONFIG.ENDPOINTS.CATEGORIES, category),
+    update: (id, category) => API.put(`${API_CONFIG.ENDPOINTS.CATEGORIES}/${id}`, category),
     delete: (id) => API.delete(`${API_CONFIG.ENDPOINTS.CATEGORIES}/${id}`)
 };
 
 const PaymentMethodService = {
     getAll: () => API.get(API_CONFIG.ENDPOINTS.PAYMENT_METHODS),
     create: (method) => API.post(API_CONFIG.ENDPOINTS.PAYMENT_METHODS, method),
+    update: (id, method) => API.put(`${API_CONFIG.ENDPOINTS.PAYMENT_METHODS}/${id}`, method),
     delete: (id) => API.delete(`${API_CONFIG.ENDPOINTS.PAYMENT_METHODS}/${id}`)
 };
 
 const BudgetService = {
     getAll: () => API.get(API_CONFIG.ENDPOINTS.BUDGETS),
-    getByCategoryMonth: (categoryId, month, year) => 
+    getByCategoryMonth: (categoryId, month, year) =>
         API.get(`${API_CONFIG.ENDPOINTS.BUDGETS}/${categoryId}/${month}/${year}`),
     create: (budget) => API.post(API_CONFIG.ENDPOINTS.BUDGETS, budget),
     update: (id, budget) => API.put(`${API_CONFIG.ENDPOINTS.BUDGETS}/${id}`, budget),
@@ -169,7 +171,7 @@ const ReportService = {
         if (params.categoryId) queryParams.append('categoryId', params.categoryId);
         if (params.paymentMethodId) queryParams.append('paymentMethodId', params.paymentMethodId);
         if (params.search) queryParams.append('search', params.search);
-        
+
         return API.get(`${API_CONFIG.ENDPOINTS.REPORTS}/filter?${queryParams.toString()}`);
     },
     monthly: (month, year) =>

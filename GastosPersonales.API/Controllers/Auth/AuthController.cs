@@ -41,11 +41,22 @@ namespace GastosPersonales.API.Controllers.Auth
 
         [Authorize]
         [HttpGet("profile")]
-        public IActionResult Profile()
+        public async Task<IActionResult> Profile()
         {
-            var correo = User.FindFirst(ClaimTypes.Email)?.Value;
-            var sub = User.FindFirst("sub")?.Value;
-            return Ok(new { Id = sub, Correo = correo });
+            // Obtener userId del token JWT
+            var userIdClaim = User.FindFirst("sub")?.Value ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+            {
+                return Unauthorized(new { Message = "Usuario no autenticado" });
+            }
+
+            var profile = await _auth.GetProfile(userId);
+            if (profile == null)
+            {
+                return NotFound(new { Message = "Usuario no encontrado" });
+            }
+
+            return Ok(profile);
         }
 
         [Authorize]

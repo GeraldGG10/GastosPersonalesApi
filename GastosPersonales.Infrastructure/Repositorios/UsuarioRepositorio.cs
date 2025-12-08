@@ -18,5 +18,11 @@ namespace GastosPersonales.Infrastructure.Repositorios
 
         public System.Threading.Tasks.Task<Usuario?> ObtenerPorCorreoAsync(string correo) => _contexto.Usuarios.FirstOrDefaultAsync(u => u.Correo == correo);
         public System.Threading.Tasks.Task<Usuario?> ObtenerPorIdAsync(int id) => _contexto.Usuarios.FindAsync(id).AsTask();
+
+        public async System.Threading.Tasks.Task ActualizarAsync(Usuario usuario)
+        {
+            _contexto.Usuarios.Update(usuario);
+            await _contexto.SaveChangesAsync();
+        }
     }
 }

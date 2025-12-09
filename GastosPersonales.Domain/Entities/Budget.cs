@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GastosPersonales.Domain.Entities
 {
+    // Entidad que representa un presupuesto asignado a una categoría para un mes y año específicos
     public class Budget : BaseEntity
     {
         public int CategoryId { get; set; }

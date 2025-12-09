@@ -7,6 +7,7 @@ using System.Text;
 
 namespace GastosPersonales.Infrastructure.Autenticacion
 {
+    // Implementación del generador de tokens JWT
     public class GeneradorJwt : IGeneradorJwt
     {
         private readonly IConfiguration _config;

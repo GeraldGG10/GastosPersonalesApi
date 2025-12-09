@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace GastosPersonales.API.Controllers
 {
+    // Controlador para la gestión de categorías
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]

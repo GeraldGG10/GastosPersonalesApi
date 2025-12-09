@@ -4,6 +4,7 @@ using GastosPersonales.Domain.Entities;
 
 namespace GastosPersonales.Application.Services.Interfaces
 {
+    // Interfaz para la gestión de gastos
     public interface IExpenseService
     {
         Task<IEnumerable<Expense>> GetAll(int userId);

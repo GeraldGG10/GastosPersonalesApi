@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 namespace GastosPersonales.Infrastructure.Persistencia
 {
+    // Contexto de la base de datos para la aplicación de gastos personales
     public class AplicacionDbContext : DbContext
     {
         public AplicacionDbContext(DbContextOptions<AplicacionDbContext> options) : base(options) { }

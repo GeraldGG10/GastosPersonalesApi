@@ -5,11 +5,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GastosPersonales.Infrastructure.Repositorios
 {
+    // Repositorio para la gestión de métodos de pago
     public class MetodoPagoRepositorio : IMetodoPagoRepositorio
     {
         private readonly AplicacionDbContext _contexto;
         public MetodoPagoRepositorio(AplicacionDbContext contexto) { _contexto = contexto; }
 
+        // Agregar un nuevo método de pago
         public async System.Threading.Tasks.Task AgregarAsync(MetodoPago metodo)
         {
             _contexto.MetodosPago.Add(metodo);
@@ -21,12 +23,14 @@ namespace GastosPersonales.Infrastructure.Repositorios
 
         public System.Threading.Tasks.Task<MetodoPago?> ObtenerPorIdAsync(int id) => _contexto.MetodosPago.FindAsync(id).AsTask();
 
+        // Actualizar un método de pago existente
         public async System.Threading.Tasks.Task ActualizarAsync(MetodoPago metodo)
         {
             _contexto.MetodosPago.Update(metodo);
             await _contexto.SaveChangesAsync();
         }
 
+        // Eliminar
         public async System.Threading.Tasks.Task EliminarAsync(MetodoPago metodo)
         {
             _contexto.MetodosPago.Remove(metodo);

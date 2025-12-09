@@ -7,22 +7,25 @@ using System.Threading.Tasks;
 
 namespace GastosPersonales.Application.Services.Implementations
 {
+    // Servicio para la gestión de métodos de pago
     public class MethodService : IMethodService
     {
         private readonly IMetodoPagoRepositorio _repositorio;
 
+        // Constructor que recibe el repositorio de métodos de pago
         public MethodService(IMetodoPagoRepositorio repositorio)
         {
             _repositorio = repositorio;
         }
 
+        // Creacion de un nuevo método de pago
         public async Task<PaymentMethod> Create(PaymentMethodDTO dto, int userId)
         {
             var metodo = new MetodoPago
             {
                 Nombre = dto.Name,
                 UsuarioId = userId
-                // La entidad no tiene Icon ni IsActive.
+                
             };
 
             await _repositorio.AgregarAsync(metodo);
@@ -37,6 +40,7 @@ namespace GastosPersonales.Application.Services.Implementations
             };
         }
 
+        // Borrar métodos de pago por ID y usuario
         public async Task<bool> Delete(int id, int userId)
         {
             var metodo = await _repositorio.ObtenerPorIdAsync(id);
@@ -46,6 +50,7 @@ namespace GastosPersonales.Application.Services.Implementations
             return true;
         }
 
+        // Obtener todos los métodos de pago para un usuario específico
         public async Task<IEnumerable<PaymentMethod>> GetAll(int userId)
         {
             var metodos = await _repositorio.ObtenerPorUsuarioIdAsync(userId);
@@ -56,7 +61,7 @@ namespace GastosPersonales.Application.Services.Implementations
                 {
                     Id = m.Id,
                     Name = m.Nombre,
-                    Icon = "credit-card", // Default icon as it is not stored
+                    Icon = "credit-card", 
                     IsActive = true,
                     UserId = m.UsuarioId
                 });
@@ -64,6 +69,7 @@ namespace GastosPersonales.Application.Services.Implementations
             return result;
         }
 
+        // Obtener métodos de pago por ID y usuario
         public async Task<PaymentMethod> GetById(int id, int userId)
         {
             var m = await _repositorio.ObtenerPorIdAsync(id);
@@ -79,6 +85,7 @@ namespace GastosPersonales.Application.Services.Implementations
             };
         }
 
+        // Actualizar los métodos de pago por ID y usuario
         public async Task<PaymentMethod> Update(int id, PaymentMethodDTO dto, int userId)
         {
             var m = await _repositorio.ObtenerPorIdAsync(id);

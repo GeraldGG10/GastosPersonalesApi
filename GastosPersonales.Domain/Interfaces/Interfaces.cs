@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 namespace GastosPersonales.Domain.Interfaces
 {
+    // Interfaces para los repositorios de las entidades del dominio
     public interface IUsuarioRepositorio
     {
         Task<Usuario?> ObtenerPorCorreoAsync(string correo);
@@ -11,7 +12,7 @@ namespace GastosPersonales.Domain.Interfaces
         Task AgregarAsync(Usuario usuario);
         Task ActualizarAsync(Usuario usuario);
     }
-
+    //Interface para el repositorio de Categoria
     public interface ICategoriaRepositorio
     {
         Task AgregarAsync(Categoria categoria);
@@ -21,6 +22,7 @@ namespace GastosPersonales.Domain.Interfaces
         Task EliminarAsync(Categoria categoria);
     }
 
+    //Interface para el repositorio de MetodoPago
     public interface IMetodoPagoRepositorio
     {
         Task AgregarAsync(MetodoPago metodo);
@@ -30,12 +32,14 @@ namespace GastosPersonales.Domain.Interfaces
         Task EliminarAsync(MetodoPago metodo);
     }
 
+    //Interface para el repositorio de Gasto
     public interface IGastoRepositorio
     {
         Task AgregarAsync(Gasto gasto);
         Task<System.Collections.Generic.List<Gasto>> ObtenerPorUsuarioIdAsync(int usuarioId);
     }
 
+    //Interface para el repositorio de Presupuesto
     public interface IBudgetRepository
     {
         Task AddAsync(Budget budget);
@@ -45,6 +49,7 @@ namespace GastosPersonales.Domain.Interfaces
         Task DeleteAsync(Budget budget);
     }
 
+    //Interface para el generador de JWT
     public interface IGeneradorJwt
     {
         string GenerarToken(int usuarioId, string correo);

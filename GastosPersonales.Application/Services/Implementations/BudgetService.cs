@@ -5,23 +5,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-// Alias to avoid ambiguity
+
 using DomainBudget = GastosPersonales.Domain.Entities.Budget;
 using AppBudget = GastosPersonales.Application.Models.Budget;
 
 namespace GastosPersonales.Application.Services.Implementations
 {
+    // Servicio para la gestión de presupuestos 
     public class BudgetService : IBudgetService
     {
         private readonly IBudgetRepository _repository;
         private readonly IExpenseService _expenseService;
 
+        // Constructor del servicio de presupuesto
         public BudgetService(IBudgetRepository repository, IExpenseService expenseService)
         {
             _repository = repository;
             _expenseService = expenseService;
         }
 
+        // Crear un nuevo presupuesto
         public async Task<AppBudget> Create(BudgetDTO dto, int userId)
         {
             var budgetEntity = new DomainBudget
@@ -38,12 +41,15 @@ namespace GastosPersonales.Application.Services.Implementations
             return MapToModel(budgetEntity);
         }
 
+        // Obtener todos los presupuestos de un usuario
         public async Task<IEnumerable<AppBudget>> GetAll(int userId)
         {
             var budgets = await _repository.GetByUserIdAsync(userId);
             return budgets.Select(MapToModel);
         }
 
+
+        // Obtener un presupuesto por categoría, mes y año
         public async Task<AppBudget> GetByCategoryMonth(int categoryId, int month, int year, int userId)
         {
             var budgets = await _repository.GetByUserIdAsync(userId);
@@ -58,6 +64,7 @@ namespace GastosPersonales.Application.Services.Implementations
             return MapToModel(budget);
         }
 
+        // Actualizar un presupuesto existente
         public async Task<AppBudget> Update(int id, BudgetDTO dto, int userId)
         {
             var budget = await _repository.GetByIdAsync(id);
@@ -74,6 +81,7 @@ namespace GastosPersonales.Application.Services.Implementations
             return MapToModel(budget);
         }
 
+        // Eliminar 
         public async Task<bool> Delete(int id, int userId)
         {
             var budget = await _repository.GetByIdAsync(id);
@@ -83,6 +91,7 @@ namespace GastosPersonales.Application.Services.Implementations
             return true;
         }
 
+        // Calcular el porcentaje gastado en una categoría específica para un mes y año dados
         public async Task<decimal> CalculateSpentPercentage(int categoryId, int month, int year, int userId)
         {
             var budgets = await _repository.GetByUserIdAsync(userId);
@@ -104,6 +113,7 @@ namespace GastosPersonales.Application.Services.Implementations
             return (categoryExpenses / budget.Amount) * 100;
         }
 
+        // Obtener la lista de presupuestos que han sido excedidos o están en estado crítico
         public async Task<IEnumerable<object>> GetExceededBudgets(int month, int year, int userId)
         {
             var allBudgets = await _repository.GetByUserIdAsync(userId);
@@ -151,6 +161,7 @@ namespace GastosPersonales.Application.Services.Implementations
                 .OrderByDescending(b => ((dynamic)b).Percentage);
         }
 
+        // Mapeo de la entidad de dominio al modelo de aplicación
         private AppBudget MapToModel(DomainBudget entity)
         {
             return new AppBudget

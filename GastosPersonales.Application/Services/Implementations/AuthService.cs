@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 
 namespace GastosPersonales.Application.Services.Implementations
 {
+    // Servicio de autenticación y gestión de usuarios
     public class AuthService : IAuthService
     {
         private readonly IConfiguration _configuration;
@@ -26,7 +27,7 @@ namespace GastosPersonales.Application.Services.Implementations
 
         public async Task<AuthResponse> Register(RegisterRequest request)
         {
-            // Verificar si ya existe
+            // Verificamos si ya existe el usuario
             var existingUser = await _usuarioRepositorio.ObtenerPorCorreoAsync(request.Email);
             if (existingUser != null)
             {
@@ -38,7 +39,7 @@ namespace GastosPersonales.Application.Services.Implementations
                 };
             }
 
-            // Crear usuario con hash
+            // Crear usuario con hash de contraseña
             var passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
             var user = new Usuario
             {
@@ -49,7 +50,7 @@ namespace GastosPersonales.Application.Services.Implementations
 
             await _usuarioRepositorio.AgregarAsync(user);
 
-            // Generar token JWT real
+            // Generar un token JWT real para el nuevo usuario
             var token = GenerateJwtToken(user);
 
             return new AuthResponse
@@ -74,7 +75,7 @@ namespace GastosPersonales.Application.Services.Implementations
                 };
             }
 
-            // Generar token JWT real
+            // Generar token JWT real para el usuario autenticado
             var token = GenerateJwtToken(user);
 
             return new AuthResponse
@@ -100,13 +101,13 @@ namespace GastosPersonales.Application.Services.Implementations
             var user = await _usuarioRepositorio.ObtenerPorIdAsync(userId);
             if (user == null) return false;
 
-            // Verificar contraseña actual
+            // Verificar contraseña actual 
             if (!BCrypt.Net.BCrypt.Verify(dto.CurrentPassword, user.PasswordHash))
             {
                 return false;
             }
 
-            // Actualizar contraseña
+            // Actualizar contraseña nueva
             user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
             await _usuarioRepositorio.ActualizarAsync(user);
             return true;
@@ -125,7 +126,7 @@ namespace GastosPersonales.Application.Services.Implementations
             };
         }
 
-        // ✅ MÉTODO NUEVO: Generar token JWT real
+        // NUEVO MÉTODO: Generar token JWT real para un usuario
         private string GenerateJwtToken(Usuario user)
         {
             var securityKey = new SymmetricSecurityKey(
@@ -138,14 +139,14 @@ namespace GastosPersonales.Application.Services.Implementations
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Email, user.Correo),
                 new Claim(ClaimTypes.Name, user.Nombre),
-                new Claim("sub", user.Id.ToString()) // Para compatibilidad
+                new Claim("sub", user.Id.ToString()) // Para la compatibilidad con JWT estándar
             };
 
             var token = new JwtSecurityToken(
                 issuer: _configuration["Jwt:Issuer"] ?? "GastosPersonalesAPI",
                 audience: _configuration["Jwt:Audience"] ?? "GastosPersonalesFrontend",
                 claims: claims,
-                expires: DateTime.Now.AddDays(7), // Token válido por 7 días
+                expires: DateTime.Now.AddDays(7), 
                 signingCredentials: credentials
             );
 

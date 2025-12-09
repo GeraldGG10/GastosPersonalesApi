@@ -5,11 +5,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GastosPersonales.Infrastructure.Repositorios
 {
+    // Implementación del repositorio de usuarios
     public class UsuarioRepositorio : IUsuarioRepositorio
     {
         private readonly AplicacionDbContext _contexto;
         public UsuarioRepositorio(AplicacionDbContext contexto) { _contexto = contexto; }
 
+        // Agrega un nuevo usuario a la base de datos
         public async System.Threading.Tasks.Task AgregarAsync(Usuario usuario)
         {
             _contexto.Usuarios.Add(usuario);
@@ -19,6 +21,7 @@ namespace GastosPersonales.Infrastructure.Repositorios
         public System.Threading.Tasks.Task<Usuario?> ObtenerPorCorreoAsync(string correo) => _contexto.Usuarios.FirstOrDefaultAsync(u => u.Correo == correo);
         public System.Threading.Tasks.Task<Usuario?> ObtenerPorIdAsync(int id) => _contexto.Usuarios.FindAsync(id).AsTask();
 
+        // Actualiza la información de un usuario existente
         public async System.Threading.Tasks.Task ActualizarAsync(Usuario usuario)
         {
             _contexto.Usuarios.Update(usuario);

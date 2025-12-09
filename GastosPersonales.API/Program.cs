@@ -14,9 +14,8 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// -----------------------------
-// 🔵 CONFIGURAR CORS
-// -----------------------------
+
+// CONFIGURACION DEL CORS
 var MyCors = "_myCors";
 builder.Services.AddCors(options =>
 {
@@ -28,16 +27,16 @@ builder.Services.AddCors(options =>
     });
 });
 
-// -----------------------------
-// 🔵 BASE DE DATOS - SQLITE ✅
-// -----------------------------
+
+// BASE DE DATOS - SQLITE 
+
 builder.Services.AddDbContext<AplicacionDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")
         ?? "Data Source=GastosDB.db"));
 
-// -----------------------------
-// 🔵 INYECCIÓN DE DEPENDENCIAS - REPOSITORIOS
-// -----------------------------
+
+// INYECCIÓN DE DEPENDENCIAS - REPOSITORIOS
+
 builder.Services.AddScoped<IUsuarioRepositorio, UsuarioRepositorio>();
 builder.Services.AddScoped<ICategoriaRepositorio, CategoriaRepositorio>();
 builder.Services.AddScoped<IMetodoPagoRepositorio, MetodoPagoRepositorio>();
@@ -46,9 +45,9 @@ builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
 builder.Services.AddScoped<IBudgetRepository, BudgetRepository>();
 builder.Services.AddScoped<IGeneradorJwt, GeneradorJwt>();
 
-// -----------------------------
-// 🔵 INYECCIÓN DE DEPENDENCIAS - SERVICIOS ✅
-// -----------------------------
+
+// INYECCIÓN DE DEPENDENCIAS - SERVICIOS 
+
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IExpenseService, ExpenseService>();
 builder.Services.AddScoped<IReportService, ReportService>();
@@ -56,9 +55,9 @@ builder.Services.AddScoped<IBudgetService, BudgetService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IMethodService, MethodService>();
 
-// -----------------------------
-// 🔵 AUTENTICACIÓN JWT
-// -----------------------------
+
+// AUTENTICACIÓN JWT
+
 var jwtKey = builder.Configuration["Jwt:Key"] ?? "tu-clave-secreta-super-segura-de-al-menos-32-caracteres-para-jwt";
 var jwtIssuer = builder.Configuration["Jwt:Issuer"] ?? "GastosPersonalesAPI";
 var jwtAudience = builder.Configuration["Jwt:Audience"] ?? "GastosPersonalesFrontend";
@@ -83,9 +82,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
-// -----------------------------
-// 🔵 SWAGGER
-// -----------------------------
+// SWAGGER
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -127,35 +125,30 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// -----------------------------
-// 🔵 AUTOMAPPER (si lo usas)
-// -----------------------------
-// builder.Services.AddAutoMapper(typeof(Program));
 
-// -----------------------------
-// 🔵 CONTROLLERS
-// -----------------------------
+
+
+// CONTROLLERS
+
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
     });
 
-// -----------------------------
-// 🔵 BUILD APP
-// -----------------------------
+
+// BUILD APP
+
 var app = builder.Build();
 
-// ✅ CREAR BASE DE DATOS AUTOMÁTICAMENTE AL INICIAR
+// CREAR BASE DE DATOS AUTOMÁTICAMENTE AL INICIAR
     using (var scope = app.Services.CreateScope())
     {
         var db = scope.ServiceProvider.GetRequiredService<AplicacionDbContext>();
         try
         {
-            db.Database.EnsureCreated(); // Crea la BD si no existe
+            db.Database.EnsureCreated(); // Crear la BD si no existe
             
-            // 🚑 FIX MANUAL: Crear tabla Budgets si no existe (porque EnsureCreated no actualiza esquemas existentes)
-            // Usamos TEXT para Amount porque es decimal y SQLite lo guarda así por defecto en EF Core
             var sql = @"
                 CREATE TABLE IF NOT EXISTS ""Budgets"" (
                     ""Id"" INTEGER NOT NULL CONSTRAINT ""PK_Budgets"" PRIMARY KEY AUTOINCREMENT,
@@ -167,17 +160,17 @@ var app = builder.Build();
                 );";
             db.Database.ExecuteSqlRaw(sql);
 
-            Console.WriteLine("✅ Base de datos creada/verificada correctamente (incluyendo Budgets)");
+            Console.WriteLine("Base de datos creada/verificada correctamente (incluyendo Budgets)");
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"❌ Error al crear la base de datos: {ex.Message}");
+            Console.WriteLine($"Error al crear la base de datos: {ex.Message}");
         }
     }
 
-// -----------------------------
-// 🔵 CONFIGURACIÓN DE DESARROLLO
-// -----------------------------
+
+// CONFIGURACIÓN DE DESARROLLO
+
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
@@ -185,20 +178,20 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "GastosPersonales API v1");
-        // c.RoutePrefix = string.Empty; // Descomenta para poner Swagger en la raíz
+        // c.RoutePrefix = string.Empty; // Descomentar para poner el Swagger en la raíz
     });
 }
 
-// -----------------------------
-// 🔵 MIDDLEWARES
-// -----------------------------
+
+// MIDDLEWARES
+
 app.UseHttpsRedirection();
 app.UseCors(MyCors);
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-Console.WriteLine("🚀 API de Gastos Personales iniciada correctamente");
-Console.WriteLine($"📊 Swagger UI disponible en: https://localhost:7262");
+Console.WriteLine("API de Gastos Personales iniciada correctamente");
+Console.WriteLine($"Swagger UI disponible en: https://localhost:7262");
 
 app.Run();

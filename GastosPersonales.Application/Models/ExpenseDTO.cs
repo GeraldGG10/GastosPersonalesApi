@@ -1,5 +1,6 @@
 namespace GastosPersonales.Application.Models
 {
+    // DTO para la transferencia de datos de gasto
     public class ExpenseDTO
     {
         public decimal Amount { get; set; }

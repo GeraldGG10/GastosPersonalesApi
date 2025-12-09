@@ -3,6 +3,7 @@ using GastosPersonales.Domain.Entities;
 
 namespace GastosPersonales.Application.Services.Interfaces
 {
+    // Interfaz para el servicio de reportes
     public interface IReportService
     {
         Task<IEnumerable<Expense>> FilterExpenses(DateTime? startDate, DateTime? endDate, int? categoryId, int? paymentMethodId, string? search, int userId);

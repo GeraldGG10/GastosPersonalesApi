@@ -2,6 +2,7 @@
 
 namespace GastosPersonales.Application.Services.Interfaces
 {
+    // Interfaz para el servicio de autenticación y gestión de usuarios
     public interface IAuthService
     {
         System.Threading.Tasks.Task<AuthResponse> Register(RegisterRequest request);

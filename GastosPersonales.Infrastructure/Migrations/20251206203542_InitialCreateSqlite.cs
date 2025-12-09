@@ -5,10 +5,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace GastosPersonales.Infrastructure.Migrations
 {
-    /// <inheritdoc />
+    // Migración inicial para crear las tablas en SQLite
     public partial class InitialCreateSqlite : Migration
     {
-        /// <inheritdoc />
+       
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -91,7 +91,7 @@ namespace GastosPersonales.Infrastructure.Migrations
                 });
         }
 
-        /// <inheritdoc />
+        
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

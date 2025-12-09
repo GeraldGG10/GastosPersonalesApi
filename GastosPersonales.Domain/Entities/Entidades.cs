@@ -1,5 +1,5 @@
 ﻿namespace GastosPersonales.Domain.Entities
-{
+{  // Entidad base con propiedades comunes
     public class Usuario : BaseEntity
     {
         public string Nombre { get; set; } = "";
@@ -7,18 +7,20 @@
         public string PasswordHash { get; set; } = "";
     }
 
+    // Entidad de categoría de gasto
     public class Categoria : BaseEntity
     {
         public string Nombre { get; set; } = "";
         public int UsuarioId { get; set; }
     }
-
+    // Entidad de método de pago
     public class MetodoPago : BaseEntity
     {
         public string Nombre { get; set; } = "";
         public int UsuarioId { get; set; }
     }
 
+    // Entidad de gasto
     public class Gasto : BaseEntity
     {
         public decimal Monto { get; set; }

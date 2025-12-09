@@ -2,6 +2,7 @@
 
 namespace GastosPersonales.Infrastructure.Repositories
 {
+    // Repositorio para la gestión de gastos
     public interface IExpenseRepository
     {
         Task<IEnumerable<Expense>> GetByUserId(int userId);

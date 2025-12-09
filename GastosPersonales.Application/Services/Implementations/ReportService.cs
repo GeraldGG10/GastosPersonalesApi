@@ -12,27 +12,31 @@ using System.Drawing;
 
 namespace GastosPersonales.Application.Services.Implementations
 {
+    // Servicio para la generación de reportes de gastos
     public class ReportService : IReportService
     {
         private readonly IExpenseRepository _expenseRepository;
 
+        // Constructor que inyecta el repositorio de gastos (No puede faltar)
         public ReportService(IExpenseRepository expenseRepository)
         {
             _expenseRepository = expenseRepository;
-            // Configurar licencia de EPPlus (NonCommercial)
+            
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
         }
 
+        // Filtra los gastos según los criterios proporcionados
         public async Task<IEnumerable<Expense>> FilterExpenses(DateTime? startDate, DateTime? endDate, int? categoryId, int? paymentMethodId, string? search, int userId)
         {
             return await _expenseRepository.Filter(startDate, endDate, categoryId, paymentMethodId, search, userId);
         }
 
+        // Exporta los gastos a formato TXT
         public async Task<string> ExportExpensesToTxt(int userId)
         {
             var expenses = await _expenseRepository.GetByUserId(userId);
             
-            var txt = "=== REPORTE DE GASTOS ===\n\n";
+            var txt = "--- REPORTE DE GASTOS ---\n\n";
             txt += $"Total de gastos: {expenses.Count()}\n";
             txt += $"Total gastado: ${expenses.Sum(e => e.Amount):N2}\n\n";
             txt += "Detalle:\n";
@@ -46,6 +50,7 @@ namespace GastosPersonales.Application.Services.Implementations
             return txt;
         }
 
+        // Lo mismo pero con JSON
         public async Task<string> ExportExpensesToJson(int userId)
         {
             var expenses = await _expenseRepository.GetByUserId(userId);
@@ -55,6 +60,7 @@ namespace GastosPersonales.Application.Services.Implementations
             });
         }
 
+        //Igual pero con Excel
         public async Task<byte[]> ExportExpensesToExcel(int userId)
         {
             var expenses = await _expenseRepository.GetByUserId(userId);
@@ -160,6 +166,7 @@ namespace GastosPersonales.Application.Services.Implementations
             return package.GetAsByteArray();
         }
 
+        // Genera un reporte mensual detallado
         public async Task<object> MonthlyReport(int month, int year, int userId)
         {
             // Mes actual
@@ -218,6 +225,7 @@ namespace GastosPersonales.Application.Services.Implementations
                 });
             }
 
+            // Resultado final
             return new
             {
                 Year = year,

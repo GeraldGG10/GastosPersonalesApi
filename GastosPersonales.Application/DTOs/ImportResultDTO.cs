@@ -1,5 +1,6 @@
 ﻿namespace GastosPersonales.Application.DTOs
 {
+    // DTO para el resultado de la importación de gastos desde un archivo, incluye detalles de errores y gastos importados
     public class ImportResultDTO
     {
         public int TotalRows { get; set; }

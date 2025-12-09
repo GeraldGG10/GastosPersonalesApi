@@ -9,12 +9,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace GastosPersonales.Infrastructure.Migrations
 {
+    //Congiuración del modelo de la base de datos
     [DbContext(typeof(AplicacionDbContext))]
     partial class AplicacionDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
+ // Aquí puedo usar código obsoleto sin que el compilador me muestre advertencias
             modelBuilder.HasAnnotation("ProductVersion", "8.0.4");
 
             modelBuilder.Entity("GastosPersonales.Domain.Entities.Categoria", b =>
@@ -136,6 +138,7 @@ namespace GastosPersonales.Infrastructure.Migrations
                     b.ToTable("Usuarios");
                 });
 #pragma warning restore 612, 618
+//A partir de aquí, las advertencias vuelven a activarse
         }
     }
 }

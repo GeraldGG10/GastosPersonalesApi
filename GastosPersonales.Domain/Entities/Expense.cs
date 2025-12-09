@@ -1,5 +1,6 @@
 ﻿namespace GastosPersonales.Domain.Entities
 {
+    // Entidad que representa un gasto registrado por un usuario
     public class Expense : BaseEntity
     {
         public decimal Amount { get; set; }

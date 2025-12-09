@@ -20,7 +20,7 @@ namespace GastosPersonales.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);; // TODO: Obtener del token JWT
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);; // Obtener todo del token JWT
             var budgets = await _service.GetAll(userId);
             return Ok(budgets);
         }
@@ -28,7 +28,7 @@ namespace GastosPersonales.API.Controllers
         [HttpGet("{categoryId}/{month}/{year}")]
         public async Task<IActionResult> GetByCategoryMonth(int categoryId, int month, int year)
         {
-            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);; // TODO: Obtener del token JWT
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value); ; // Obtenemos toda la categoria del token JWT
             try
             {
                 var budget = await _service.GetByCategoryMonth(categoryId, month, year, userId);
@@ -43,7 +43,7 @@ namespace GastosPersonales.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] BudgetDTO dto)
         {
-            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);; // TODO: Obtener del token JWT
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value); ; // Obtener todo del token JWT
             var budget = await _service.Create(dto, userId);
             return CreatedAtAction(nameof(GetByCategoryMonth), 
                 new { categoryId = budget.CategoryId, month = budget.Month, year = budget.Year }, 
@@ -53,7 +53,7 @@ namespace GastosPersonales.API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] BudgetDTO dto)
         {
-            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);; // TODO: Obtener del token JWT
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);; 
             try
             {
                 var budget = await _service.Update(id, dto, userId);

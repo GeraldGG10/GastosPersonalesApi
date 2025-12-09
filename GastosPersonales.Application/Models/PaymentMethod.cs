@@ -1,5 +1,6 @@
 namespace GastosPersonales.Application.Models
 {
+    // Método de pago asociado a un usuario
     public class PaymentMethod
     {
         public int Id { get; set; }

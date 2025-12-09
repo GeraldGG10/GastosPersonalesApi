@@ -1,5 +1,6 @@
 namespace GastosPersonales.Application.Models
 {
+    // Categoría de gasto asociada a un usuario
     public class Category
     {
         public int Id { get; set; }

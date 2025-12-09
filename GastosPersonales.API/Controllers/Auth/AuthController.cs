@@ -6,6 +6,7 @@ using System.Security.Claims;
 
 namespace GastosPersonales.API.Controllers.Auth
 {
+    // Controlador para la autenticación y gestión de usuarios
     [ApiController]
     [Route("api/[controller]")]
     public class AuthController : ControllerBase

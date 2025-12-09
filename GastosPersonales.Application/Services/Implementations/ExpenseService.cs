@@ -10,21 +10,25 @@ using System.Globalization;
 
 namespace GastosPersonales.Application.Services.Implementations
 {
+    // Servicio para la gestión de gastos
     public class ExpenseService : IExpenseService
     {
         private readonly IExpenseRepository _expenseRepository;
 
+        // El Constructor que no puede faltar lider :)
         public ExpenseService(IExpenseRepository expenseRepository)
         {
             _expenseRepository = expenseRepository;
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
         }
 
+        // Obtener todos los gastos
         public async Task<IEnumerable<Expense>> GetAll(int userId)
         {
             return await _expenseRepository.GetByUserId(userId);
         }
 
+        // Obtener por su ID
         public async Task<Expense> GetById(int id, int userId)
         {
             var expense = await _expenseRepository.GetById(id, userId);
@@ -32,6 +36,7 @@ namespace GastosPersonales.Application.Services.Implementations
             return expense;
         }
 
+        // Crear un nuevo gasto
         public async Task<Expense> Create(ExpenseDTO expenseDto, int userId)
         {
             var expense = new Expense
@@ -46,6 +51,7 @@ namespace GastosPersonales.Application.Services.Implementations
             return await _expenseRepository.Add(expense);
         }
 
+        //Actualizar
         public async Task<Expense> Update(int id, ExpenseDTO expenseDto, int userId)
         {
             var expense = await _expenseRepository.GetById(id, userId);
@@ -60,10 +66,13 @@ namespace GastosPersonales.Application.Services.Implementations
             return await _expenseRepository.Update(expense);
         }
 
+        //Borrar
         public async Task<bool> Delete(int id, int userId)
         {
             return await _expenseRepository.Delete(id, userId);
         }
+
+        // Importar desde Excel, la función más compleja del servicio, pero se logro :), eso quedo del kilo
 
         public async Task<ImportResultDTO> ImportFromExcel(Stream fileStream, string fileName, int userId)
         {

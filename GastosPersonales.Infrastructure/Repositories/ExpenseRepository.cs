@@ -4,15 +4,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GastosPersonales.Infrastructure.Repositories
 {
+    // Repositorio para la gestión de gastos
     public class ExpenseRepository : IExpenseRepository
     {
         private readonly AplicacionDbContext _context;
-
+        // Constructor que recibe el contexto de la base de datos
         public ExpenseRepository(AplicacionDbContext context)
         {
             _context = context;
         }
 
+        // Obtener todos los gastos de un usuario específico
         public async Task<IEnumerable<Expense>> GetByUserId(int userId)
         {
             return await _context.Expenses
@@ -21,12 +23,14 @@ namespace GastosPersonales.Infrastructure.Repositories
                 .ToListAsync();
         }
 
+        // Obtener un gasto por su ID y el ID del usuario
         public async Task<Expense?> GetById(int id, int userId)
         {
             return await _context.Expenses
                 .FirstOrDefaultAsync(e => e.Id == id && e.UserId == userId);
         }
 
+        // Agregar un nuevo gasto
         public async Task<Expense> Add(Expense expense)
         {
             _context.Expenses.Add(expense);
@@ -34,6 +38,7 @@ namespace GastosPersonales.Infrastructure.Repositories
             return expense;
         }
 
+        // Actualizar un gasto existente
         public async Task<Expense> Update(Expense expense)
         {
             _context.Expenses.Update(expense);
@@ -41,6 +46,7 @@ namespace GastosPersonales.Infrastructure.Repositories
             return expense;
         }
 
+        // Eliminar un gasto por su ID y el ID del usuario
         public async Task<bool> Delete(int id, int userId)
         {
             var expense = await GetById(id, userId);
@@ -51,6 +57,7 @@ namespace GastosPersonales.Infrastructure.Repositories
             return true;
         }
 
+        // Filtrar gastos según varios criterios
         public async Task<IEnumerable<Expense>> Filter(DateTime? startDate, DateTime? endDate, 
             int? categoryId, int? paymentMethodId, string? search, int userId)
         {

@@ -2,6 +2,7 @@ using GastosPersonales.Application.Models;
 
 namespace GastosPersonales.Application.Services.Interfaces
 {
+    // Interfaz para el servicio de gestión de categorías
     public interface ICategoryService
     {
         Task<IEnumerable<Category>> GetAll(int userId);

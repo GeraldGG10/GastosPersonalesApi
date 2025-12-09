@@ -11,6 +11,8 @@ using System.Security.Claims;
 
 namespace GastosPersonales.API.Controllers
 {
+
+    //Controlador para la gestión de gastos 
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]

@@ -7,29 +7,30 @@ using System.Threading.Tasks;
 
 namespace GastosPersonales.Application.Services.Implementations
 {
+    // Servicio para la gestión de categorías
     public class CategoryService : ICategoryService
     {
         private readonly ICategoriaRepositorio _repositorio;
 
+        // Constructor que inyecta el repositorio de categorías
         public CategoryService(ICategoriaRepositorio repositorio)
         {
             _repositorio = repositorio;
         }
 
+        // Crear una nueva categoría
         public async Task<Category> Create(CategoryDTO dto, int userId)
         {
             var category = new Categoria
             {
                 Nombre = dto.Name,
                 UsuarioId = userId,
-                // IsActive se asume true o se agrega a la entidad si es necesario. 
-                // Revisando entidad Categoria: public string Nombre { get; set; } = ""; public int UsuarioId { get; set; }
-                // La entidad no tiene IsActive actualmente. Lo omitiremos o agregaremos en un futuro si se pide explicitamente.
+                
             };
 
             await _repositorio.AgregarAsync(category);
 
-            // Mapear de vuelta a modelo de aplicación (si es necesario) o retornar DTO/Entidad mapeada
+            
             return new Category
             {
                 Id = category.Id,
@@ -39,6 +40,7 @@ namespace GastosPersonales.Application.Services.Implementations
             };
         }
 
+        //Borrar una categoría por su ID
         public async Task<bool> Delete(int id, int userId)
         {
             var cat = await _repositorio.ObtenerPorIdAsync(id);
@@ -48,6 +50,7 @@ namespace GastosPersonales.Application.Services.Implementations
             return true;
         }
 
+        // Obtener todas las categorías de un usuario
         public async Task<IEnumerable<Category>> GetAll(int userId)
         {
             var categorias = await _repositorio.ObtenerPorUsuarioIdAsync(userId);
@@ -66,6 +69,7 @@ namespace GastosPersonales.Application.Services.Implementations
             return result;
         }
 
+        // Obtener una categoría por su ID
         public async Task<Category> GetById(int id, int userId)
         {
             var cat = await _repositorio.ObtenerPorIdAsync(id);
@@ -80,6 +84,7 @@ namespace GastosPersonales.Application.Services.Implementations
             };
         }
 
+        // Actualizar una categoría existente
         public async Task<Category> Update(int id, CategoryDTO dto, int userId)
         {
             var cat = await _repositorio.ObtenerPorIdAsync(id);

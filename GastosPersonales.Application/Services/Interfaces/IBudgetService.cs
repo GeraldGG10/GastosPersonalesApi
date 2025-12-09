@@ -2,6 +2,7 @@
 
 namespace GastosPersonales.Application.Services.Interfaces
 {
+    // Interfaz para el servicio de gestión de presupuestos
     public interface IBudgetService
     {
         Task<IEnumerable<Budget>> GetAll(int userId);
